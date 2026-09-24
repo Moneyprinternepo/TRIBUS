@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tribe Impact · Del mercado a la activación</title>
+<meta name="description" content="Tribe Impact: inteligencia de audiencias basada en tribus comerciales. Presentación comercial con caso demostrativo.">
+<meta name="theme-color" content="#090909">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   TRIBE IMPACT · Presentación comercial
+   Sistema visual: tinta, hueso, lima eléctrica + 6 colores de tribu
+   ========================================================= */
+:root{
+  --ink:#090909;
+  --ink-2:#141414;
+  --bone:#F3F0E8;
+  --bone-2:rgba(243,240,232,.64);
+  --bone-3:rgba(243,240,232,.36);
+  --hair:rgba(243,240,232,.14);
+  --lime:#DFFF3F;
+
+  /* tribus: el mismo color durante toda la presentación */
+  --t-urban:#5E8BFF;
+  --t-perf:#FF6A3D;
+  --t-eco:#3FD69A;
+  --t-social:#FF8CC6;
+  --t-design:#B08CFF;
+  --t-tech:#F2B544;
+
+  --pad:clamp(1.15rem,min(5vw,8.5vh),6.5rem);
+  --f-mega:clamp(4.6rem,min(25vw,47vh),31rem);
+  --f-hero:clamp(2.5rem,min(8.2vw,14.2vh),10.4rem);
+  --f-display:clamp(2rem,min(5.5vw,9.8vh),7rem);
+  --f-h2:clamp(1.5rem,min(3.4vw,6vh),4.3rem);
+  --f-h3:clamp(1.08rem,min(1.95vw,3.5vh),2.4rem);
+  --f-body:clamp(.92rem,min(1.2vw,2.15vh),1.45rem);
+  --f-small:clamp(.72rem,min(.86vw,1.55vh),1.02rem);
+
+  --ease:cubic-bezier(.2,.7,.2,1);
+  --ease-io:cubic-bezier(.72,0,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);color:var(--bone);overflow:hidden}
+body{font-family:"Inter Tight","Inter","Helvetica Neue",Arial,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;font-feature-settings:"ss01","cv11"}
+button{font-family:inherit;color:inherit}
+canvas,svg{display:block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+.bone :focus-visible,.lime :focus-visible{outline-color:var(--ink)}
+
+/* ---------- deck ---------- */
+.deck{height:100vh;height:100dvh;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;
+  scrollbar-width:none;overscroll-behavior:none}
+.deck::-webkit-scrollbar{display:none}
+.slide{position:relative;height:100vh;height:100dvh;scroll-snap-align:start;scroll-snap-stop:always;
+  overflow:hidden;padding:var(--pad);isolation:isolate;background:var(--ink)}
+.slide.bone{background:var(--bone);color:var(--ink)}
+.slide.lime{background:var(--lime);color:var(--ink)}
+.no-tr,.no-tr *{transition:none!important;animation:none!important}
+
+/* ---------- tipografía ---------- */
+.mega{font-size:var(--f-mega);font-weight:800;line-height:.8;letter-spacing:-.065em;font-variant-numeric:tabular-nums lining-nums}
+.hero{font-size:var(--f-hero);font-weight:800;line-height:.9;letter-spacing:-.05em}
+.display{font-size:var(--f-display);font-weight:780;line-height:.94;letter-spacing:-.045em;text-wrap:balance}
+.h2{font-size:var(--f-h2);font-weight:720;line-height:1.02;letter-spacing:-.035em;text-wrap:balance}
+.h3{font-size:var(--f-h3);font-weight:620;line-height:1.15;letter-spacing:-.02em;text-wrap:balance}
+.body{font-size:var(--f-body);line-height:1.45;max-width:46ch;text-wrap:pretty}
+.small{font-size:var(--f-small);line-height:1.45;letter-spacing:.005em}
+.muted{color:var(--bone-2)}
+.faint{color:var(--bone-3)}
+.bone .muted,.lime .muted{color:rgba(9,9,9,.62)}
+.lime-t{color:var(--lime)}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.wordmark{font-weight:800;letter-spacing:.14em;font-size:var(--f-small)}
+
+/* ---------- revelado por estados ----------
+   .on = slide activa (estado 0) · .st1..st7 = estados acumulados */
+[data-in]{opacity:0;translate:0 .55em;
+  transition:opacity .7s var(--ease) var(--d,0ms),translate .85s var(--ease) var(--d,0ms)}
+.on [data-in="0"],.st1 [data-in="1"],.st2 [data-in="2"],.st3 [data-in="3"],
+.st4 [data-in="4"],.st5 [data-in="5"],.st6 [data-in="6"],.st7 [data-in="7"]{opacity:1;translate:0 0}
+.st1 [data-out="1"],.st2 [data-out="2"],.st3 [data-out="3"],.st4 [data-out="4"],
+.st5 [data-out="5"],.st6 [data-out="6"]{opacity:0;translate:0 -.35em;pointer-events:none}
+
+/* titulares que suben línea a línea */
+.rise[data-in]{opacity:1;translate:none}
+.rise .ln{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.rise .ln>span{display:inline-block;translate:0 112%;
+  transition:translate 1s var(--ease) calc(var(--d,0ms) + var(--i,0) * 95ms)}
+.on .rise[data-in="0"] .ln>span,.st1 .rise[data-in="1"] .ln>span,.st2 .rise[data-in="2"] .ln>span,
+.st3 .rise[data-in="3"] .ln>span,.st4 .rise[data-in="4"] .ln>span,.st5 .rise[data-in="5"] .ln>span,
+.st6 .rise[data-in="6"] .ln>span{translate:0 0}
+.st1 .rise[data-out="1"],.st2 .rise[data-out="2"],.st3 .rise[data-out="3"]{opacity:0;
+  transition:opacity .45s ease}
+
+/* ---------- interfaz fija ---------- */
+.ui-brand{position:fixed;left:var(--pad);top:clamp(.8rem,2.6vh,1.6rem);z-index:40;pointer-events:none;
+  font-weight:800;letter-spacing:.14em;font-size:clamp(.62rem,.72vw,.8rem);opacity:.8;transition:opacity .5s ease,color .5s ease}
+body.at-cover .ui-brand,body.at-close .ui-brand{opacity:0}
+.ui-fs{position:fixed;right:clamp(.7rem,1.6vw,1.6rem);top:clamp(.6rem,2.2vh,1.4rem);z-index:42;
+  width:2.2rem;height:2.2rem;display:grid;place-items:center;background:none;border:1px solid var(--hair);
+  border-radius:50%;cursor:pointer;opacity:.55;transition:opacity .3s ease,border-color .3s ease}
+.ui-fs:hover{opacity:1}
+.ui-fs svg{width:.95rem;height:.95rem}
+.ui-progress{position:fixed;left:0;top:0;height:2px;background:var(--lime);width:0;z-index:43;
+  transition:width .5s var(--ease)}
+.ui-rail{position:fixed;right:clamp(.7rem,1.6vw,1.6rem);top:50%;transform:translateY(-50%);z-index:41;
+  display:none;flex-direction:column;align-items:flex-end;gap:.55rem}
+@media(min-width:960px) and (min-height:560px){.ui-rail{display:flex}}
+.ui-rail button{display:flex;align-items:center;gap:.6rem;background:none;border:0;cursor:pointer;padding:.15rem 0;
+  font-size:.72rem;font-weight:600;opacity:.34;transition:opacity .3s ease}
+.ui-rail button span{opacity:0;translate:6px 0;transition:opacity .3s ease,translate .3s ease;white-space:nowrap}
+.ui-rail:hover button span,.ui-rail button:focus-visible span{opacity:1;translate:0 0}
+.ui-rail button i{display:block;width:14px;height:2px;background:currentColor;transition:width .45s var(--ease)}
+.ui-rail button:hover{opacity:.8}
+.ui-rail button[aria-current="true"]{opacity:1}
+.ui-rail button[aria-current="true"] i{width:34px}
+.ui-count{position:fixed;right:clamp(.8rem,1.8vw,1.8rem);bottom:clamp(.6rem,2vh,1.3rem);z-index:41;
+  font-size:.7rem;font-weight:600;letter-spacing:.06em;opacity:.45;font-variant-numeric:tabular-nums;pointer-events:none}
+.ui-legend{position:fixed;left:var(--pad);bottom:clamp(.6rem,2vh,1.3rem);z-index:41;font-size:.68rem;font-weight:500;
+  letter-spacing:.02em;opacity:0;transition:opacity .6s ease;pointer-events:none}
+body.is-demo .ui-legend{opacity:.5}
+.ui-hint{position:fixed;left:50%;bottom:clamp(.8rem,2.4vh,1.6rem);translate:-50% 0;z-index:41;font-size:.72rem;
+  opacity:.5;transition:opacity .8s ease;pointer-events:none;white-space:nowrap}
+.ui-hint.gone{opacity:0}
+body.ui-dark .ui-brand,body.ui-dark .ui-fs,body.ui-dark .ui-rail,body.ui-dark .ui-count,
+body.ui-dark .ui-legend,body.ui-dark .ui-hint{color:var(--ink)}
+body.ui-dark .ui-fs{border-color:rgba(9,9,9,.25)}
+body.ui-dark .ui-progress{background:var(--ink)}
+body.at-lime .ui-progress{background:var(--ink)}
+.tip{position:fixed;z-index:50;pointer-events:none;background:var(--bone);color:var(--ink);padding:.5rem .7rem;
+  font-size:.78rem;line-height:1.35;font-weight:560;max-width:260px;opacity:0;transition:opacity .18s ease;
+  box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.tip.show{opacity:1}
+.tip b{font-weight:800}
+
+/* =========================================================
+   01 PORTADA
+   ========================================================= */
+.s-cover{display:flex;flex-direction:column;justify-content:flex-end}
+.crowd{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.s-cover .veil,.s-close .veil{position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(90deg,rgba(9,9,9,.95) 0%,rgba(9,9,9,.78) 45%,rgba(9,9,9,0) 78%)}
+.cover-inner{max-width:min(1250px,92vw);padding-bottom:clamp(1rem,6vh,4rem)}
+.cover-inner .wordmark{margin-bottom:clamp(1.2rem,5vh,3.4rem);font-size:clamp(.8rem,1vw,1.05rem)}
+.cover-sub{margin-top:clamp(1.2rem,4.5vh,2.8rem);font-size:var(--f-h3);font-weight:520;letter-spacing:-.015em;color:var(--bone-2)}
+@media(max-aspect-ratio:1/1){.s-cover .veil,.s-close .veil{background:linear-gradient(0deg,rgba(9,9,9,.95) 20%,rgba(9,9,9,.55) 60%,rgba(9,9,9,.1) 100%)}}
+
+/* =========================================================
+   02 PROBLEMA
+   ========================================================= */
+.s-problem{display:grid;align-content:center}
+.prob-card{position:relative;padding-left:clamp(.9rem,1.6vw,1.6rem);border-left:2px solid var(--bone-3);
+  transition:border-color .8s ease}
+.st1 .prob-card{border-color:transparent}
+.prob-tag{font-size:var(--f-small);color:var(--bone-2);margin-bottom:.8em;transition:opacity .6s ease}
+.st1 .prob-tag{opacity:0}
+.prob-line{font-size:var(--f-display);font-weight:780;line-height:1;letter-spacing:-.045em;white-space:nowrap}
+.prob-line .ch{display:inline-block;white-space:pre;
+  transition:transform 1.25s var(--ease-io) calc(var(--k) * 14ms),opacity 1s ease calc(var(--k) * 14ms + 150ms),color 1s ease}
+.st1 .prob-line .ch{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:.13}
+.prob-q{position:absolute;right:var(--pad);bottom:calc(var(--pad) * 1.2);max-width:19ch;text-align:right;
+  font-size:var(--f-display)}
+@media(max-width:760px){.prob-q{left:var(--pad);text-align:left}}
+
+/* =========================================================
+   03 DE TARGET A TRIBUS
+   ========================================================= */
+.viz-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.cl-text{position:relative;max-width:min(40vw,640px)}
+.cl-text .display+.display{margin-top:.35em}
+.cl-a{transition:color .9s ease}
+.st1 .cl-a{color:var(--bone-3)}
+@media(max-aspect-ratio:1/1){.cl-text{max-width:100%}}
+
+/* =========================================================
+   04 CINCO PREGUNTAS
+   ========================================================= */
+.s-questions{display:grid;grid-template-columns:1fr;align-content:center}
+@media(min-width:900px){.s-questions{grid-template-columns:1.25fr .75fr;align-items:center;gap:4vw}}
+.qs{list-style:none;position:relative;padding-left:clamp(1.6rem,3vw,3.2rem)}
+.qs::before{content:"";position:absolute;left:.35rem;top:.6em;width:2px;height:calc((100% - 1.2em) * var(--qp,0));
+  background:var(--lime);transition:height .7s var(--ease)}
+.q{display:flex;align-items:baseline;gap:.5em;font-size:clamp(1.9rem,min(5vw,8.6vh),6.6rem);font-weight:800;
+  letter-spacing:-.045em;line-height:1.02;text-transform:uppercase;opacity:0;translate:0 .4em;
+  transition:opacity .6s var(--ease),translate .7s var(--ease),color .6s ease,font-size .8s var(--ease-io)}
+.q-n{font-size:.28em;font-weight:700;letter-spacing:0;color:var(--lime);min-width:1.4em;translate:0 -1.3em}
+.q.is-shown{opacity:1;translate:0 0}
+.q.is-past{color:var(--bone-3)}
+.q.is-past .q-n{color:var(--bone-3)}
+.s-questions.st5 .q{font-size:clamp(1.4rem,min(3.9vw,6.6vh),4.8rem);color:var(--bone)}
+.s-questions.st5 .q-n{color:var(--lime)}
+.q-brand{margin-top:2rem}
+.q-brand .wordmark{font-size:clamp(1.6rem,min(3.6vw,6.2vh),4.6rem);letter-spacing:.06em;line-height:1;color:var(--lime)}
+.q-brand p+p{margin-top:.9em}
+
+/* =========================================================
+   05 SEÑALES
+   ========================================================= */
+.s-signals{display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr}
+@media(min-width:900px){.s-signals{grid-template-columns:.8fr 1.2fr;grid-template-rows:1fr;align-items:center}}
+.sig-text .note{margin-top:1.6em;max-width:36ch}
+.sig-viz{width:100%;height:100%;min-height:0}
+.sig-viz text{font-family:inherit}
+.sig-line{fill:none;stroke:var(--hair);stroke-width:1;stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1s var(--ease) var(--d,0ms)}
+.sig-flow{fill:none;stroke:var(--lime);stroke-width:1.4;stroke-linecap:round;stroke-dasharray:.6 9;opacity:0;
+  transition:opacity 1s ease var(--d,0ms)}
+.sig-cross{fill:none;stroke:rgba(243,240,232,.07);stroke-width:1;opacity:0;transition:opacity 1.2s ease 1.2s}
+.sig-node{opacity:0;transition:opacity .7s ease var(--d,0ms)}
+.st1 .sig-line{stroke-dashoffset:0}
+.st1 .sig-flow{opacity:.55;animation:flow 9s linear infinite}
+.st1 .sig-node,.st1 .sig-cross{opacity:1}
+@keyframes flow{to{stroke-dashoffset:-19.2}}
+.sig-center{opacity:0;transform-box:fill-box;transform-origin:center;scale:.6;transition:opacity .8s ease .2s,scale 1s var(--ease) .2s}
+.on .sig-center{opacity:1;scale:1}
+
+/* =========================================================
+   06 PIPELINE
+   ========================================================= */
+.s-pipe{display:flex;flex-direction:column;justify-content:center;gap:clamp(1.4rem,6vh,4.5rem)}
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(.6rem,2vw,2.4rem)}
+.stage{position:relative}
+.stage .glyph{width:100%;max-width:min(15vw,24vh);aspect-ratio:1;overflow:visible}
+.stage .glyph *{opacity:0;transition:opacity .5s ease calc(var(--i) * 380ms + var(--g,0ms))}
+.on .stage .glyph *{opacity:1}
+.stage::after{content:"";position:absolute;top:calc(min(15vw,24vh) / 2);left:calc(min(15vw,24vh) + .5rem);
+  right:-.4rem;height:1.5px;background:var(--ink);transform-origin:left;scale:0 1;
+  transition:scale .5s var(--ease) calc(var(--i) * 380ms + 260ms)}
+.stage:last-child::after{display:none}
+.on .stage::after{scale:1 1}
+.stage-n{margin-top:1rem;font-size:var(--f-h3);font-weight:760;letter-spacing:-.025em;opacity:0;
+  transition:opacity .5s ease calc(var(--i) * 380ms + 120ms)}
+.on .stage-n{opacity:1}
+.verbs{display:flex;flex-wrap:wrap;gap:.2em .8em;font-size:var(--f-h3);font-weight:520;letter-spacing:-.02em;color:rgba(9,9,9,.62)}
+.verbs span{opacity:0;transition:opacity .5s ease calc(2000ms + var(--i) * 160ms)}
+.on .verbs span{opacity:1}
+.verbs span:last-child{color:var(--ink);font-weight:720}
+@media(max-width:760px){
+  .pipe{grid-template-columns:1fr;gap:.35rem}
+  .stage{display:flex;align-items:center;gap:1rem}
+  .stage .glyph{max-width:12vh;width:12vh}
+  .stage-n{margin-top:0}
+  .stage::after{display:none}
+}
+
+/* =========================================================
+   07 VOLT ONE
+   ========================================================= */
+.s-volt{display:flex;flex-direction:column;justify-content:center}
+.city{position:absolute;inset:0;width:100%;height:100%;z-index:-2}
+.s-volt .veil{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(9,9,9,.97) 0%,rgba(9,9,9,.82) 40%,rgba(9,9,9,.15) 78%)}
+.city-route{fill:none;stroke:var(--lime);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2.2s var(--ease-io) .5s}
+.on .city-route{stroke-dashoffset:0}
+.city-end{opacity:0;transition:opacity .4s ease 2.6s}
+.on .city-end{opacity:1}
+.tag{font-size:var(--f-small);font-weight:700;letter-spacing:.08em;color:var(--lime);margin-bottom:1.4em}
+.volt-row{display:flex;align-items:flex-end;gap:clamp(.8rem,2vw,2.4rem);flex-wrap:wrap}
+.volt-row .mega{color:var(--bone)}
+.volt-row .h3{max-width:13ch;padding-bottom:.5em}
+.volt-c{margin-top:clamp(1rem,5vh,3rem)}
+.volt-spec{position:absolute;right:var(--pad);bottom:calc(var(--pad) * .7);font-size:var(--f-small);color:var(--bone-2);
+  text-align:right;max-width:32ch}
+@media(max-width:760px){.volt-spec{display:none}}
+
+/* =========================================================
+   08 GALAXIA · 09 COMPOSICIÓN (visualizaciones a pantalla completa)
+   ========================================================= */
+.full-viz{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.viz-head{position:relative;z-index:2;max-width:min(34rem,44vw);pointer-events:none}
+@media(max-aspect-ratio:1/1){.viz-head{max-width:100%}}
+.viz-head .h2+.body{margin-top:.8em}
+.gx text{font-family:inherit;pointer-events:none}
+.gx .cl{cursor:pointer;transition:opacity .45s ease}
+.gx.has-focus .cl:not(.focus){opacity:.22}
+.gx .rel{fill:none;stroke:var(--bone);stroke-linecap:round;opacity:0;transition:opacity .8s ease var(--d,0ms)}
+.gx.show-rel .rel{opacity:.32}
+.gx.has-focus .rel{opacity:.06}
+.gx .spoke{stroke:var(--hair);stroke-width:1}
+.gx-info{position:absolute;left:var(--pad);bottom:calc(var(--pad) * .9);z-index:3;max-width:30ch;pointer-events:none;
+  transition:opacity .35s ease;opacity:0}
+.gx-info.show{opacity:1}
+.gx-info b{display:block;font-size:var(--f-h3);font-weight:760;letter-spacing:-.02em}
+.gx-info .q{font-size:var(--f-body);margin-top:.35em}
+.gx-cap{position:absolute;left:var(--pad);bottom:calc(var(--pad) * .9);z-index:2;max-width:34ch}
+.cmp-lab{opacity:0;transition:opacity .6s ease var(--d,0ms)}
+.cmp-lab.show{opacity:1}
+
+/* =========================================================
+   10 FOCO DE TRIBU
+   ========================================================= */
+.s-focus{display:grid;align-items:center}
+.focus-zoom{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+.focus-grid{display:grid;grid-template-columns:1fr;gap:clamp(1rem,3vh,2.4rem);align-items:center;width:100%}
+@media(min-width:960px){.focus-grid{grid-template-columns:.92fr 1.08fr;gap:5vw}}
+.f-name{font-size:var(--f-display);font-weight:800;letter-spacing:-.045em;line-height:.92;color:var(--tc,var(--bone));
+  transition:color .6s ease}
+.f-stats{display:flex;align-items:baseline;gap:.8em;margin-top:.6em;flex-wrap:wrap}
+.f-share{font-size:var(--f-h2);font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.f-people{font-size:var(--f-h3);color:var(--bone-2);font-variant-numeric:tabular-nums}
+.f-head{margin-top:clamp(1.2rem,5vh,3.2rem)}
+.f-formula{margin-top:.9em;font-size:var(--f-h3);font-weight:560;color:var(--tc);transition:color .6s ease}
+.swap{transition:opacity .28s ease,filter .28s ease}
+.swapping .swap{opacity:0!important;filter:blur(4px)}
+.focus-right{position:relative;min-height:0}
+.fp{display:grid;gap:clamp(1rem,3.6vh,2.4rem)}
+.fp-lab{font-size:var(--f-small);color:var(--bone-2);margin-bottom:.7em}
+.fp-bars{display:grid;gap:.45em}
+.fp-bar{display:grid;grid-template-columns:minmax(8.5em,11em) 1fr 2.6em;align-items:center;gap:.8em;font-size:var(--f-body)}
+.fp-bar .tr{height:6px;background:var(--hair);position:relative}
+.fp-bar .fl{position:absolute;inset:0 auto 0 0;background:var(--tc);width:0;transition:width 1s var(--ease),background .6s ease}
+.fp-bar .v{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.fp-words{display:flex;flex-wrap:wrap;gap:.1em .55em;align-items:baseline;line-height:1.1}
+.fp-words span{font-weight:650;letter-spacing:-.02em}
+.fp-plat{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.fp-plat b{display:block;font-size:var(--f-h2);font-weight:800;letter-spacing:-.04em;color:var(--tc);line-height:1;
+  font-variant-numeric:tabular-nums;transition:color .6s ease}
+.fp-plat span{font-size:var(--f-small);color:var(--bone-2)}
+.cmp{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center}
+.cmp table{width:100%;border-collapse:collapse;font-size:var(--f-body)}
+.cmp th,.cmp td{text-align:left;padding:.85em .8em .85em 0;border-bottom:1px solid var(--hair);vertical-align:top}
+.cmp thead th{font-size:var(--f-h3);font-weight:760;letter-spacing:-.02em}
+.cmp tbody th{font-weight:500;color:var(--bone-2);width:26%;font-size:var(--f-small);padding-top:1.15em}
+.cmp td{font-weight:600;width:37%}
+@media(max-width:959px){.fp-plat{grid-template-columns:repeat(2,1fr)}.fp-words{font-size:.85em}}
+@media(max-height:700px){.fp-words{display:none}.fp-words-wrap{display:none}}
+
+/* =========================================================
+   11 SEIS MOTIVACIONES
+   ========================================================= */
+.s-motiv{display:grid;grid-template-columns:1fr;gap:2rem;align-content:center}
+@media(min-width:960px){.s-motiv{grid-template-columns:.62fr 1.38fr;align-items:center;gap:5vw}}
+.mv-list{list-style:none;display:grid;gap:clamp(.4rem,1.6vh,1rem)}
+.mv-list li{display:grid;grid-template-columns:clamp(3rem,6vw,8rem) 1fr;gap:.2em .9em;align-items:center;opacity:0;translate:-.6em 0;
+  transition:opacity .5s ease,translate .6s var(--ease),color .5s ease}
+.mv-list li.shown{opacity:.42;translate:0 0}
+.mv-list li.cur{opacity:1}
+.mv-list .tk{height:3px;background:var(--c);width:calc(var(--s) * 100%)}
+.mv-list .nm{font-size:var(--f-body);font-weight:700;letter-spacing:-.01em}
+.mv-list .qt{grid-column:2;font-size:var(--f-small);color:var(--bone-2);max-height:0;overflow:hidden;
+  transition:max-height .6s var(--ease)}
+.s-motiv.st6 .mv-list li{opacity:1}
+.s-motiv.st6 .mv-list .qt{max-height:3em}
+.mv-stage{position:relative;min-height:min(46vh,30rem)}
+.mv-q{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;opacity:0;translate:0 .4em;
+  transition:opacity .55s ease,translate .7s var(--ease)}
+.mv-q.show{opacity:1;translate:0 0}
+.mv-q .who{font-size:var(--f-h3);font-weight:700;letter-spacing:-.015em;margin-bottom:.5em}
+.mv-q .say{font-size:clamp(2.2rem,min(6.2vw,11vh),8rem);font-weight:800;letter-spacing:-.05em;line-height:.95;text-wrap:balance}
+.mv-end .say{color:var(--bone)}
+
+/* =========================================================
+   12 HEATMAP · 13 HÁBITAT
+   ========================================================= */
+.s-heat{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(.8rem,3vh,2rem)}
+.hm{width:100%;height:100%;min-height:0}
+.hm text{font-family:inherit}
+.hm .cell{opacity:0;transition:opacity .6s ease var(--d,0ms)}
+.on .hm .cell{opacity:var(--o)}
+.hm.has-focus .row:not(.focus) .cell{opacity:calc(var(--o) * .16)}
+.hm.has-focus .row:not(.focus) .rl{opacity:.35}
+.hm .val{opacity:0;transition:opacity .35s ease;font-variant-numeric:tabular-nums;pointer-events:none}
+.hm .row.focus .val{opacity:1}
+.hm .row{cursor:pointer}
+.hm .rl{transition:opacity .4s ease}
+.hm-foot{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}
+.ramp{display:flex;align-items:center;gap:.5rem}
+.ramp i{display:block;width:1.1rem;height:.7rem;background:var(--bone)}
+
+.s-habitat{display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr}
+@media(min-width:960px){.s-habitat{grid-template-columns:.78fr 1.22fr;grid-template-rows:1fr;align-items:center;gap:3vw}}
+.hb{width:100%;height:100%;min-height:0}
+.hb text{font-family:inherit}
+.hb .ring{fill:none;stroke:var(--hair);stroke-width:1;stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.2s var(--ease) var(--d,0ms)}
+.on .hb .ring{stroke-dashoffset:0}
+.hb .role{opacity:0;transition:opacity .6s ease var(--d,0ms)}
+.st1 .hb .role{opacity:1}
+.hb .lvl{opacity:0;transition:opacity .6s ease 1s}
+.on .hb .lvl{opacity:1}
+.hab-text .h3{margin-top:1.1em;color:var(--bone-2)}
+
+/* =========================================================
+   14 TERRITORIOS CREATIVOS
+   ========================================================= */
+.s-creative{padding:0;display:grid;grid-template-columns:repeat(3,1fr)}
+.poster{position:relative;overflow:hidden;padding:calc(var(--pad) * 1.3) calc(var(--pad) * .7) calc(var(--pad) * .8);
+  display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid rgba(9,9,9,.9);
+  clip-path:inset(100% 0 0 0);transition:clip-path 1s var(--ease-io) var(--d,0ms)}
+.poster::before{content:"";position:absolute;inset:0;background:var(--c);opacity:.13;z-index:-1}
+.poster svg.art{position:absolute;inset:0;width:100%;height:100%;z-index:-1;opacity:.9}
+.on .poster[data-p="0"],.st1 .poster[data-p="1"],.st2 .poster[data-p="2"]{clip-path:inset(0 0 0 0)}
+.poster .who{font-size:var(--f-small);font-weight:800;letter-spacing:.06em;color:var(--c)}
+.poster .claim{font-size:clamp(1.7rem,min(3.4vw,6.8vh),4.8rem);font-weight:800;letter-spacing:-.045em;line-height:.96;
+  text-wrap:balance;margin-top:auto;margin-bottom:clamp(1rem,5vh,3rem)}
+.poster dl{display:grid;grid-template-columns:auto 1fr;gap:.35em 1em;font-size:var(--f-small);border-top:1px solid var(--hair);padding-top:1em}
+.poster dt{color:var(--bone-2)}
+.poster dd{font-weight:600}
+.cr-head{position:absolute;left:var(--pad);top:calc(var(--pad) * .55);z-index:4;font-size:var(--f-body);font-weight:650;
+  max-width:60ch}
+.cr-note{position:absolute;right:var(--pad);bottom:calc(var(--pad) * .3);z-index:4;font-size:.68rem;color:var(--bone-2)}
+@media(max-width:860px){
+  .s-creative{grid-template-columns:1fr;grid-template-rows:repeat(3,1fr)}
+  .poster{border-right:0;border-bottom:1px solid rgba(9,9,9,.9);padding:calc(var(--pad) * 1.2) var(--pad) .8rem}
+  .poster dl{display:none}
+  .poster .claim{font-size:clamp(1.4rem,6.4vw,2.4rem);margin-bottom:.4rem}
+}
+
+/* =========================================================
+   15 MOMENTO CLAVE
+   ========================================================= */
+.s-key{display:flex;flex-direction:column;justify-content:center}
+.key-a{font-size:clamp(2.3rem,min(7vw,12.2vh),9.6rem);font-weight:800;letter-spacing:-.052em;line-height:.93;max-width:16ch}
+.key-b{position:absolute;right:var(--pad);bottom:calc(var(--pad) * .9);font-size:clamp(2rem,min(5vw,9vh),6.6rem);
+  font-weight:800;letter-spacing:-.05em;background:var(--ink);color:var(--lime);padding:.05em .3em .12em}
+
+/* =========================================================
+   16 SANKEY
+   ========================================================= */
+.s-sankey{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(.6rem,2.4vh,1.6rem)}
+.sk{width:100%;height:100%;min-height:0;overflow:visible}
+.sk text{font-family:inherit}
+.sk .flow{transition:opacity .45s ease;cursor:pointer}
+.sk.f-any .flow{opacity:.07}
+.sk.f-any .flow.hi{opacity:.92}
+.sk .nodeL,.sk .nodeR{cursor:pointer}
+.sk-foot{display:grid;grid-template-columns:1fr;gap:.6rem;min-height:3.4em;align-items:end}
+.sk-cap{display:grid;align-items:end}
+.sk-cap .body{max-width:none}
+.sk-cap>div{grid-area:1/1;opacity:0;translate:0 .4em;transition:opacity .45s ease,translate .5s var(--ease)}
+.sk-cap>div.show{opacity:1;translate:0 0}
+.sk-cap b{font-weight:800}
+.sk-split{display:flex;flex-wrap:wrap;gap:.2em 1.3em;margin-top:.35em;font-size:var(--f-body)}
+.sk-split span{white-space:nowrap}
+.sk-split em{font-style:normal;font-weight:800;font-variant-numeric:tabular-nums;margin-right:.3em}
+
+/* =========================================================
+   17 500.000 € → RANKING
+   ========================================================= */
+.s-budget .bud-cv{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.bud-hero{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;z-index:2;transition:opacity .6s ease,scale .9s var(--ease-io)}
+.bud-hero .mega{font-size:clamp(3.6rem,min(16vw,30vh),19rem);color:var(--lime)}
+.bud-hero .h3{margin-top:.8em;color:var(--bone-2)}
+.s-budget.st1 .bud-hero{opacity:0;scale:.86;pointer-events:none}
+.bud-unit{position:absolute;left:50%;translate:-50% 0;bottom:calc(var(--pad) * .9);z-index:2;white-space:nowrap}
+.s-budget [data-in].bud-unit{translate:-50% .5em}
+.s-budget.st1 [data-in].bud-unit{translate:-50% 0}
+.s-budget.st2 [data-in].bud-unit{opacity:0}
+.bud-head{position:relative;z-index:3;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.bud-head .h3 small{display:block;font-size:var(--f-small);color:var(--bone-2);font-weight:500;margin-top:.4em;letter-spacing:0}
+.sim{display:flex;align-items:center;gap:.25rem;font-size:var(--f-small)}
+.sim>span{color:var(--bone-2);margin-right:.5rem}
+.sim button{background:none;border:1px solid var(--hair);padding:.4em .75em;cursor:pointer;font-weight:700;
+  font-variant-numeric:tabular-nums;transition:background .25s ease,color .25s ease,border-color .25s ease}
+.sim button[aria-pressed="true"]{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.bud-labels{position:absolute;inset:0;z-index:2;pointer-events:none}
+.bl{position:absolute;display:flex;align-items:center;opacity:0;transition:opacity .6s ease var(--d,0ms)}
+.bl.show{opacity:1}
+.bl-l{justify-content:flex-end;gap:.7em;text-align:right}
+.bl-l .rk{font-size:var(--f-small);font-weight:700;color:var(--bone-2);font-variant-numeric:tabular-nums}
+.bl-l .nm{font-size:var(--f-h3);font-weight:780;letter-spacing:-.025em;white-space:nowrap}
+.bl-r{gap:.8em;align-items:baseline}
+.bl-r .pc{font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1}
+.bl-r .eu{font-size:var(--f-body);color:var(--bone-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bl-top .nm{color:var(--lime)}
+.bl-top .pc{color:var(--lime)}
+
+/* =========================================================
+   18 LA ESTRATEGIA ESTÁ DEBAJO
+   ========================================================= */
+.s-why{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(1rem,4vh,2.6rem)}
+.why-rows{display:grid;align-content:center;gap:0}
+.wr{display:grid;grid-template-columns:minmax(7rem,1.05fr) 4.2rem 2.4fr 1.3fr;gap:1.4rem;align-items:center;
+  padding:clamp(.55rem,1.8vh,1.2rem) 0;border-top:1px solid var(--hair)}
+.wr:last-child{border-bottom:1px solid var(--hair)}
+.wr .nm{font-size:var(--f-h3);font-weight:780;letter-spacing:-.025em}
+.wr .pc{font-size:var(--f-h3);font-weight:800;color:var(--lime);font-variant-numeric:tabular-nums}
+.wr .tx{font-size:var(--f-body);color:var(--bone-2)}
+.wr .tx b{color:var(--bone);font-weight:650}
+.wr .br{display:flex;height:10px;gap:2px}
+.wr .br i{display:block;height:100%;background:var(--c);flex:0 0 auto;width:0;transition:width .9s var(--ease) var(--d,0ms)}
+.st1 .wr .br i{width:calc(var(--w) * 1%)}
+.keys{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-size:var(--f-small);color:var(--bone-2)}
+.keys span{display:inline-flex;align-items:center;gap:.45em}
+.keys i{width:.7em;height:.7em;background:var(--c);display:block}
+@media(max-width:860px){.wr{grid-template-columns:1fr auto;gap:.3rem 1rem}.wr .tx{grid-column:1/-1}.wr .br{grid-column:1/-1}}
+
+/* =========================================================
+   19 GENÉRICO VS TRIBE IMPACT
+   ========================================================= */
+.s-results{display:grid;grid-template-rows:auto 1fr auto;gap:clamp(.8rem,3vh,2rem)}
+.res-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap}
+.toggle{display:inline-flex;border:1px solid var(--hair);font-size:var(--f-small)}
+.toggle button{background:none;border:0;padding:.55em 1em;cursor:pointer;font-weight:700;transition:background .3s ease,color .3s ease}
+.toggle button[aria-pressed="true"]{background:var(--bone);color:var(--ink)}
+.toggle button.ti[aria-pressed="true"]{background:var(--lime)}
+.res-body{display:grid;grid-template-columns:1fr;gap:2rem;align-items:center;min-height:0}
+@media(min-width:900px){.res-body{grid-template-columns:auto 1fr;gap:6vw}}
+.field{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(4px,.55vw,9px);width:min(58vh,36vw);aspect-ratio:1}
+.field i{display:block;border-radius:50%;background:rgba(243,240,232,.1);transition:background-color .5s ease var(--d,0ms),scale .5s var(--ease) var(--d,0ms)}
+.field i.lit{background:var(--c,var(--bone))}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.2rem,5vh,3.4rem) 3vw}
+.mt .lb{font-size:var(--f-small);color:var(--bone-2);margin-bottom:.5em}
+.mt .vl{font-size:clamp(2.6rem,min(7vw,12vh),9rem);font-weight:800;letter-spacing:-.06em;line-height:.85;
+  font-variant-numeric:tabular-nums;transition:color .6s ease}
+.s-results.st1 .mt .vl{color:var(--lime)}
+.mt .dl{font-size:var(--f-body);font-weight:650;margin-top:.45em;opacity:0;transition:opacity .5s ease .9s;font-variant-numeric:tabular-nums}
+.s-results.st1 .mt .dl{opacity:1}
+@media(max-width:899px){.field{width:min(34vh,70vw)}.metrics .vl{font-size:clamp(2rem,10vw,4rem)}}
+
+/* =========================================================
+   20 ENTREGABLES · línea de metro
+   ========================================================= */
+.s-deliver{display:grid;grid-template-rows:auto 1fr}
+.metro{position:relative;display:grid;grid-template-columns:repeat(6,1fr);align-items:stretch;margin:0 1.2rem;height:min(62vh,36rem);align-self:center}
+.metro::before{content:"";position:absolute;left:-1.2rem;right:-1.2rem;top:50%;height:4px;margin-top:-2px;background:var(--lime);
+  transform-origin:left;scale:0 1;transition:scale 2.2s var(--ease-io) .3s}
+.on .metro::before{scale:1 1}
+.metro-end{position:absolute;top:50%;font-size:var(--f-small);color:var(--bone-2);translate:0 1.2em}
+.metro-end.a{left:-1.2rem}.metro-end.b{right:-1.2rem}
+.stn{position:relative;height:100%;display:flex;justify-content:center}
+.stn .dot{position:absolute;top:50%;left:50%;width:clamp(16px,1.5vw,24px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:var(--ink);border:3px solid var(--lime);scale:0;transition:scale .45s var(--ease) calc(500ms + var(--i) * 300ms)}
+.on .stn .dot{scale:1}
+.stn .tx{position:absolute;left:50%;translate:-50% 0;width:min(100%,15rem);text-align:center;opacity:0;
+  transition:opacity .5s ease calc(650ms + var(--i) * 300ms)}
+.on .stn .tx{opacity:1}
+.stn.up .tx{bottom:calc(50% + 2.2rem)}
+.stn.dn .tx{top:calc(50% + 2.2rem)}
+.stn .n{font-size:var(--f-small);font-weight:800;color:var(--lime);font-variant-numeric:tabular-nums}
+.stn .t{font-size:var(--f-h3);font-weight:780;letter-spacing:-.025em;margin:.2em 0 .25em}
+.stn .d{font-size:var(--f-small);color:var(--bone-2)}
+@media(max-width:860px){
+  .metro{grid-template-columns:1fr;grid-template-rows:repeat(6,1fr);margin:1rem 0 0 .6rem}
+  .metro::before{left:0;right:auto;top:0;bottom:0;width:4px;height:auto;margin:0;transform-origin:top;scale:1 0}
+  .on .metro::before{scale:1 1}
+  .metro-end{display:none}
+  .stn .dot{left:2px}
+  .stn .tx,.stn.up .tx,.stn.dn .tx{left:2.2rem;translate:0 -50%;top:50%;bottom:auto;text-align:left;width:auto}
+  .stn .t{font-size:1.05rem;margin:0}
+}
+
+/* =========================================================
+   21 APLICACIONES
+   ========================================================= */
+.s-apps{display:flex;flex-direction:column;justify-content:space-between}
+.slot{position:relative;height:1.08em;width:min(52vw,100%);overflow:hidden;font-size:clamp(2.3rem,min(6.2vw,12vh),8.2rem);font-weight:800;
+  letter-spacing:-.055em;line-height:1}
+.slot span{position:absolute;left:0;top:0;white-space:nowrap;transition:translate .5s var(--ease-io),opacity .4s ease}
+.slot span.enter{translate:0 105%}
+.slot span.leave{translate:0 -105%;opacity:0}
+.apps-map{position:absolute;left:52%;top:12%;width:calc(48% - var(--pad) - 3rem);height:76%;z-index:0}
+.apps-head,.slot,.apps-q{position:relative;z-index:1}
+.apps-q .h2{max-width:24ch}
+@media(max-aspect-ratio:1/1){.apps-map{left:var(--pad);width:calc(100% - var(--pad) * 2);top:36%;height:30%;opacity:.55}.slot{width:100%}}
+.apps-list{font-size:var(--f-small);color:rgba(9,9,9,.55);margin-top:.8em;max-width:60ch}
+
+/* =========================================================
+   22 ANTES / AHORA · 23 CIERRE
+   ========================================================= */
+.s-ba{display:grid;grid-template-columns:1fr;gap:0;padding:0}
+@media(min-width:860px){.s-ba{grid-template-columns:1fr 1fr}}
+.ba{position:relative;padding:calc(var(--pad) * 1.6) var(--pad) var(--pad);display:flex;flex-direction:column;justify-content:flex-start;gap:clamp(1rem,4vh,2.6rem)}
+.ba+.ba{border-left:1px solid var(--hair)}
+.ba .k{font-size:var(--f-small);font-weight:700;letter-spacing:.06em;color:var(--bone-2)}
+.ba.now .k{color:var(--lime)}
+.ba svg{width:100%;max-width:30rem;height:min(30vh,17rem)}
+.ba .h2{font-size:calc(var(--f-h2) * .88)}
+.ba .h2 span{display:block}
+.ba.before .h2{color:var(--bone-2)}
+.s-close{display:flex;flex-direction:column;justify-content:center}
+.close-claim{font-size:clamp(2.6rem,min(8.6vw,15vh),11rem);font-weight:800;letter-spacing:-.055em;line-height:.9}
+.close-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-top:clamp(1.6rem,8vh,5rem)}
+.close-foot .wordmark{font-size:clamp(1.1rem,1.8vw,2rem);letter-spacing:.1em}
+.close-foot .h3{color:var(--bone-2);margin-top:.35em}
+.logo-slot{width:clamp(9rem,15vw,15rem);height:clamp(3.4rem,6vw,5.4rem);border:1px dashed var(--bone-3);display:grid;
+  place-items:center;font-size:.7rem;color:var(--bone-2);text-align:center;padding:.4rem;background:rgba(9,9,9,.7)}
+
+/* ---------- pantallas bajas / estrechas ---------- */
+@media(max-height:640px){
+  .stage-n{margin-top:.5rem}
+  .fp{gap:.8rem}
+}
+
+/* ---------- movimiento reducido ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;transition-delay:0ms!important;animation:none!important}
+}
+
+.s-galaxy.hovering .gx-cap{opacity:0}
+.gx-cap{transition:opacity .35s ease}
+
+/* ---------- móvil: composición propia, sin encoger todo ---------- */
+@media(max-width:760px){
+  .slide{padding-top:calc(var(--pad) + 2.1rem)}
+  .s-creative,.s-ba{padding-top:0}
+  .ui-hint{display:none}
+  .gx-cap{bottom:calc(var(--pad) + 1.2rem)}
+}
+@media(max-width:859px){
+  .s-ba{grid-template-rows:1fr 1fr}
+  .ba{padding:calc(var(--pad) + 1.8rem) var(--pad) .6rem;gap:.6rem;justify-content:center}
+  .ba svg{height:14vh}
+  .ba .h2{font-size:clamp(1.1rem,5.2vw,1.6rem)}
+  .ba+.ba{border-left:0;border-top:1px solid var(--hair)}
+  .cr-note{display:none}
+}
+</style>
+</head>
+<body class="at-cover">
+<div class="ui-progress" id="progress" aria-hidden="true"></div>
+<p class="ui-brand" aria-hidden="true">TRIBE IMPACT</p>
+<button class="ui-fs" id="fsBtn" type="button" aria-label="Pantalla completa (tecla F)">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+</button>
+<nav class="ui-rail" id="rail" aria-label="Capítulos"></nav>
+<p class="ui-count" id="count" aria-hidden="true"></p>
+<p class="ui-legend" aria-hidden="true">Datos simulados · Caso demostrativo</p>
+<p class="ui-hint" id="hint">Flechas, rueda o espacio para avanzar · F pantalla completa</p>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<main class="deck" id="deck">
+
+<!-- =========================================================
+     COVER
+     ========================================================= -->
+<section class="slide s-cover" data-scene="cover" data-chapter="0" aria-roledescription="diapositiva" aria-label="Portada">
+  <canvas class="crowd" aria-hidden="true"></canvas>
+  <div class="veil"></div>
+  <div class="cover-inner">
+    <p class="wordmark" data-in="0">TRIBE IMPACT</p>
+    <h1 class="hero rise" data-in="0" style="--d:250ms">
+      <span class="ln" style="--i:0"><span>Tu mercado</span></span>
+      <span class="ln" style="--i:1"><span>no es una audiencia.</span></span>
+      <span class="ln lime-t" style="--i:3"><span>Son muchas.</span></span>
+    </h1>
+    <p class="cover-sub" data-in="0" style="--d:1300ms">Descúbrelas. Entiéndelas. Actívalas.</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     PROBLEM
+     ========================================================= -->
+<section class="slide s-problem" data-scene="problem" data-steps="2" data-chapter="1" aria-roledescription="diapositiva" aria-label="El problema">
+  <div class="prob-card" data-in="0">
+    <p class="prob-tag">El target de un briefing cualquiera</p>
+    <p class="prob-line" data-shatter>Hombres y mujeres</p>
+    <p class="prob-line" data-shatter>25–44</p>
+    <p class="prob-line" data-shatter>urbanos</p>
+    <p class="prob-line" data-shatter>ABC1</p>
+  </div>
+  <h2 class="prob-q display rise" data-in="1" style="--d:600ms">
+    <span class="ln" style="--i:0"><span>¿De verdad</span></span>
+    <span class="ln" style="--i:1"><span>todos ellos compran</span></span>
+    <span class="ln" style="--i:2"><span>por la misma razón?</span></span>
+  </h2>
+</section>
+
+<!-- =========================================================
+     DISCOVERY · de target a tribus
+     ========================================================= -->
+<section class="slide s-cluster" data-scene="cluster" data-steps="2" data-chapter="1" aria-roledescription="diapositiva" aria-label="De target a tribus">
+  <canvas class="viz-canvas" aria-hidden="true"></canvas>
+  <div class="cl-text">
+    <h2 class="display rise cl-a" data-in="0" style="--d:200ms">
+      <span class="ln" style="--i:0"><span>Cuando miramos</span></span>
+      <span class="ln" style="--i:1"><span>más cerca,</span></span>
+      <span class="ln" style="--i:2"><span>el target desaparece.</span></span>
+    </h2>
+    <h2 class="display rise lime-t" data-in="1" style="--d:1500ms">
+      <span class="ln"><span>Aparecen las tribus.</span></span>
+    </h2>
+  </div>
+  <p class="sr">Una masa homogénea de puntos se separa en seis grupos de distinto tamaño.</p>
+</section>
+
+<!-- =========================================================
+     DISCOVERY · cinco preguntas
+     ========================================================= -->
+<section class="slide s-questions" data-scene="questions" data-steps="6" data-chapter="2" aria-roledescription="diapositiva" aria-label="Cinco preguntas">
+  <ol class="qs">
+    <li class="q"><span class="q-n">1</span><span>Quiénes son</span></li>
+    <li class="q"><span class="q-n">2</span><span>Cuántos son</span></li>
+    <li class="q"><span class="q-n">3</span><span>Qué los mueve</span></li>
+    <li class="q"><span class="q-n">4</span><span>Dónde están</span></li>
+    <li class="q"><span class="q-n">5</span><span>Cómo impactarlos</span></li>
+  </ol>
+  <div class="q-brand" data-in="5" style="--d:400ms">
+    <p class="wordmark">TRIBE IMPACT</p>
+    <p class="h3 muted">Cinco preguntas. Un solo análisis.<br>Del mercado a la activación.</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     DISCOVERY · qué analizamos
+     ========================================================= -->
+<section class="slide s-signals" data-scene="signals" data-steps="2" data-chapter="2" aria-roledescription="diapositiva" aria-label="Qué analizamos">
+  <div class="sig-text">
+    <h2 class="h2 rise" data-in="0">
+      <span class="ln" style="--i:0"><span>Millones de señales.</span></span>
+      <span class="ln" style="--i:1"><span>Una estructura que</span></span>
+      <span class="ln" style="--i:2"><span>sí podemos leer.</span></span>
+    </h2>
+    <p class="body muted note" data-in="1" style="--d:1400ms">Analizamos señales agregadas y patrones de comunidad alrededor de un producto. Nunca personas individuales ni información privada.</p>
+  </div>
+  <svg class="sig-viz" role="img" aria-label="Ecosistema de señales alrededor del producto: conversación, intereses, búsquedas, comunidades, consumo de contenido, afinidades, comportamiento digital, contexto, creators y plataformas"></svg>
+</section>
+
+<!-- =========================================================
+     DISCOVERY · cómo funciona
+     ========================================================= -->
+<section class="slide bone s-pipe" data-scene="pipeline" data-chapter="2" aria-roledescription="diapositiva" aria-label="Cómo funciona">
+  <h2 class="h2 rise" data-in="0"><span class="ln"><span>De la señal a la decisión.</span></span></h2>
+  <div class="pipe" id="pipe"></div>
+  <p class="verbs" id="verbs"></p>
+</section>
+
+<!-- =========================================================
+     DEMO · Volt One
+     ========================================================= -->
+<section class="slide s-volt" data-scene="volt" data-steps="2" data-chapter="3" data-demo aria-roledescription="diapositiva" aria-label="Caso demo Volt One">
+  <svg class="city" aria-hidden="true"></svg>
+  <div class="veil"></div>
+  <p class="tag" data-in="0">Caso demo · Volt One</p>
+  <p class="h2" data-in="0" style="--d:150ms">Una e-bike.</p>
+  <div class="volt-row">
+    <p class="mega" data-in="0" style="--d:300ms"><span class="volt-n num">4,2</span></p>
+    <p class="h3 muted" data-in="0" style="--d:700ms">millones de consumidores potenciales.</p>
+  </div>
+  <p class="h2 lime-t volt-c" data-in="1">Pero no una sola audiencia.</p>
+  <p class="volt-spec" data-in="0" style="--d:1200ms">E-bike urbana premium con app conectada y batería integrada. Lanzamiento nacional en España.</p>
+</section>
+
+<!-- =========================================================
+     TRIBES · galaxia
+     ========================================================= -->
+<section class="slide s-galaxy" data-scene="galaxy" data-steps="2" data-chapter="3" data-demo aria-roledescription="diapositiva" aria-label="Galaxia de tribus">
+  <svg class="full-viz gx" role="img" aria-label="Seis tribus alrededor de Volt One. Urban Optimizers 23%, Performance Chasers 20%, Eco Pragmatists 17%, Social Explorers 15%, Design Status Seekers 13%, Tech Tinkerers 12%"></svg>
+  <div class="viz-head">
+    <h2 class="h2 rise" data-in="0">
+      <span class="ln" style="--i:0"><span>Seis tribus</span></span>
+      <span class="ln" style="--i:1"><span>alrededor de</span></span>
+      <span class="ln" style="--i:2"><span>un mismo producto.</span></span>
+    </h2>
+    <p class="body muted" data-in="0" style="--d:1500ms">El área de cada comunidad refleja su peso en el mercado prioritario.</p>
+  </div>
+  <div class="gx-cap" data-in="1"><p class="body">No son islas. Comparten intereses, creators y momentos. <span class="muted">El grosor de cada línea indica el solapamiento entre tribus.</span></p></div>
+  <div class="gx-info" aria-hidden="true"><b></b><p class="q"></p></div>
+</section>
+
+<!-- =========================================================
+     TRIBES · composición
+     ========================================================= -->
+<section class="slide s-comp" data-scene="composition" data-chapter="3" data-demo aria-roledescription="diapositiva" aria-label="Composición del mercado">
+  <svg class="full-viz cmpv" role="img" aria-label="Barra 100% con el peso de cada tribu sobre 4,2 millones de personas"></svg>
+  <div class="viz-head" style="max-width:min(76rem,82vw)">
+    <h2 class="h2 rise" data-in="0">
+      <span class="ln" style="--i:0"><span>Ya sabemos quién compone el mercado.</span></span>
+      <span class="ln muted" style="--i:1"><span>Y cuánto pesa cada comunidad.</span></span>
+    </h2>
+  </div>
+</section>
+
+<!-- =========================================================
+     TRIBES · foco en una tribu (Urban Optimizers → Design Status Seekers)
+     ========================================================= -->
+<section class="slide s-focus" data-scene="focus" data-steps="5" data-chapter="4" data-demo aria-roledescription="diapositiva" aria-label="Perfil de tribu">
+  <svg class="focus-zoom" aria-hidden="true"></svg>
+  <div class="focus-grid">
+    <div class="focus-left">
+      <h2 class="f-name swap" data-in="0" style="--d:700ms"></h2>
+      <p class="f-stats swap" data-in="0" style="--d:900ms"><span class="f-share"></span><span class="f-people"></span></p>
+      <h3 class="f-head h2 swap" data-in="1"></h3>
+      <p class="f-formula swap" data-in="1" style="--d:350ms"></p>
+    </div>
+    <div class="focus-right">
+      <div class="fp" data-in="2" data-out="4">
+        <div class="swap"><p class="fp-lab">Qué les mueve · índice de afinidad</p><div class="fp-bars"></div></div>
+        <div class="swap fp-words-wrap"><p class="fp-lab">De qué hablan</p><div class="fp-words"></div></div>
+        <div class="swap"><p class="fp-lab">Dónde están · afinidad por entorno</p><div class="fp-plat"></div></div>
+      </div>
+      <div class="cmp" data-in="4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     TRIBES · seis motivaciones
+     ========================================================= -->
+<section class="slide s-motiv" data-scene="motivations" data-steps="7" data-chapter="4" data-demo aria-roledescription="diapositiva" aria-label="Seis tribus, seis motivaciones">
+  <ul class="mv-list"></ul>
+  <div class="mv-stage" aria-live="polite">
+    <div class="mv-q a"><p class="who"></p><p class="say"></p></div>
+    <div class="mv-q b"><p class="who"></p><p class="say"></p></div>
+    <div class="mv-q mv-end"><p class="say">Un producto.<br>Seis puertas de entrada.</p></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     DIGITAL HABITAT · heatmap
+     ========================================================= -->
+<section class="slide s-heat" data-scene="heatmap" data-steps="2" data-chapter="5" data-demo aria-roledescription="diapositiva" aria-label="Dónde viven las tribus">
+  <h2 class="h2 rise" data-in="0">
+    <span class="ln" style="--i:0"><span>Cada tribu deja una</span></span>
+    <span class="ln" style="--i:1"><span>huella digital diferente.</span></span>
+  </h2>
+  <svg class="hm" role="img" aria-label="Matriz de afinidad entre seis tribus y seis entornos digitales"></svg>
+  <div class="hm-foot small muted">
+    <span>Índice de afinidad. 100 es la media del mercado prioritario. Pasa el cursor por una fila para ver los valores.</span>
+    <span class="ramp" aria-hidden="true"><span>Menor</span><i style="opacity:.1"></i><i style="opacity:.3"></i><i style="opacity:.55"></i><i style="opacity:.8"></i><i></i><span>Mayor</span></span>
+  </div>
+</section>
+
+<!-- =========================================================
+     DIGITAL HABITAT · hábitat de Tech Tinkerers
+     ========================================================= -->
+<section class="slide s-habitat" data-scene="habitat" data-steps="2" data-chapter="5" data-demo aria-roledescription="diapositiva" aria-label="Hábitat de Tech Tinkerers">
+  <div class="hab-text">
+    <p class="tag" style="color:var(--t-tech)" data-in="0">Hábitat · Tech Tinkerers</p>
+    <h2 class="h2 rise" data-in="0">
+      <span class="ln" style="--i:0"><span>Saber dónde están</span></span>
+      <span class="ln" style="--i:1"><span>no basta.</span></span>
+    </h2>
+    <p class="h3" data-in="1" style="--d:1000ms">Hay que saber qué función cumple cada entorno.</p>
+  </div>
+  <svg class="hb" role="img" aria-label="Mapa de hábitat de Tech Tinkerers: YouTube y Reddit muy alto, Search alto, TikTok y Meta medio, Programmatic y CTV bajo"></svg>
+</section>
+
+<!-- =========================================================
+     DIGITAL HABITAT · territorios creativos
+     ========================================================= -->
+<section class="slide s-creative" data-scene="creative" data-steps="3" data-chapter="5" data-demo aria-roledescription="diapositiva" aria-label="Territorios creativos">
+  <p class="cr-head" data-in="0">El conocimiento de cada tribu también orienta el mensaje.</p>
+  <article class="poster" data-p="0" style="--c:var(--t-urban)"></article>
+  <article class="poster" data-p="1" style="--c:var(--t-perf)"></article>
+  <article class="poster" data-p="2" style="--c:var(--t-design)"></article>
+  <p class="cr-note" data-in="2" style="--d:900ms">Territorios de ejemplo para ilustrar el método. No son claims definitivos.</p>
+</section>
+
+<!-- =========================================================
+     ACTIVATION · momento clave
+     ========================================================= -->
+<section class="slide lime s-key" data-scene="key" data-steps="2" data-chapter="6" aria-roledescription="diapositiva" aria-label="De la inteligencia a la activación">
+  <h2 class="key-a rise" data-in="0">
+    <span class="ln" style="--i:0"><span>Entender a las tribus</span></span>
+    <span class="ln" style="--i:1"><span>solo sirve si cambia</span></span>
+    <span class="ln" style="--i:2"><span>dónde ponemos el dinero.</span></span>
+  </h2>
+  <p class="key-b" data-in="1">Y lo cambia.</p>
+</section>
+
+<!-- =========================================================
+     ACTIVATION · sankey tribus → canales
+     ========================================================= -->
+<section class="slide s-sankey" data-scene="sankey" data-steps="4" data-chapter="6" data-demo aria-roledescription="diapositiva" aria-label="De tribus a canales">
+  <h2 class="h2 rise" data-in="0">
+    <span class="ln" style="--i:0"><span>De la composición del mercado</span></span>
+    <span class="ln muted" style="--i:1"><span>a la composición de la inversión.</span></span>
+  </h2>
+  <svg class="sk" role="img" aria-label="Flujos de inversión desde las seis tribus hacia seis canales"></svg>
+  <div class="sk-foot">
+    <div class="sk-cap">
+      <div class="c0 show small muted">A la izquierda, la presión recomendada para cada tribu. A la derecha, el canal donde se ejecuta.</div>
+      <div class="c1"></div>
+      <div class="c2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     MEDIA PLAN · 500.000 € → ranking
+     ========================================================= -->
+<section class="slide s-budget" data-scene="budget" data-steps="3" data-chapter="6" data-demo aria-roledescription="diapositiva" aria-label="Distribución de 500.000 euros">
+  <canvas class="bud-cv" aria-hidden="true"></canvas>
+  <div class="bud-hero">
+    <p class="mega num" data-in="0">500.000 €</p>
+    <p class="h3" data-in="0" style="--d:700ms">¿Dónde los invertiríamos?</p>
+  </div>
+  <p class="bud-unit small muted" data-in="1" style="--d:600ms">Cada cuadro representa 1.000 €</p>
+  <header class="bud-head" data-in="2" style="--d:1500ms">
+    <h2 class="h3">Mix de medios recomendado<small class="bud-sub">Cada cuadro, 1.000 €. El color indica la tribu que origina esa inversión.</small></h2>
+    <div class="sim" role="group" aria-label="Simular presupuesto">
+      <span>Simular presupuesto</span>
+      <button type="button" data-b="250000" aria-pressed="false">250K</button>
+      <button type="button" data-b="500000" aria-pressed="true">500K</button>
+      <button type="button" data-b="750000" aria-pressed="false">750K</button>
+      <button type="button" data-b="1000000" aria-pressed="false">1M</button>
+    </div>
+  </header>
+  <div class="bud-labels"></div>
+</section>
+
+<!-- =========================================================
+     MEDIA PLAN · la estrategia está debajo
+     ========================================================= -->
+<section class="slide s-why" data-scene="why" data-steps="2" data-chapter="6" data-demo aria-roledescription="diapositiva" aria-label="Por qué cada canal">
+  <h2 class="h2 rise" data-in="0">
+    <span class="ln" style="--i:0"><span>El porcentaje es la consecuencia.</span></span>
+    <span class="ln muted" style="--i:1"><span>La estrategia está debajo.</span></span>
+  </h2>
+  <div class="why-rows"></div>
+  <p class="keys" data-in="1" style="--d:900ms"></p>
+</section>
+
+<!-- =========================================================
+     RESULTS · genérico vs Tribe Impact
+     ========================================================= -->
+<section class="slide s-results" data-scene="results" data-steps="2" data-chapter="7" data-demo aria-roledescription="diapositiva" aria-label="Plan genérico frente a plan por tribus">
+  <div class="res-top">
+    <h2 class="h2 rise" data-in="0">
+      <span class="ln" style="--i:0"><span>Mismo presupuesto.</span></span>
+      <span class="ln muted" style="--i:1"><span>Más precisión.</span></span>
+    </h2>
+    <div class="toggle" role="group" aria-label="Comparar planes" data-in="0" style="--d:500ms">
+      <button type="button" class="gen" aria-pressed="true">Plan genérico</button>
+      <button type="button" class="ti" aria-pressed="false">Plan Tribe Impact</button>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="field" data-in="0" style="--d:300ms" role="img" aria-label="De cada 100 personas del mercado prioritario, contactos cualificados alcanzados"></div>
+    <div class="metrics" data-in="0" style="--d:600ms"></div>
+  </div>
+  <p class="small muted">Simulación sobre datos ficticios del caso demostrativo. Cada punto representa el 1% del mercado prioritario; iluminado, alcanzado con cobertura cualificada.</p>
+</section>
+
+<!-- =========================================================
+     CLOSING · qué recibe el cliente
+     ========================================================= -->
+<section class="slide s-deliver" data-scene="deliver" data-chapter="8" aria-roledescription="diapositiva" aria-label="Qué recibe el cliente">
+  <h2 class="h2 rise" data-in="0">
+    <span class="ln" style="--i:0"><span>Del mapa al plan.</span></span>
+    <span class="ln muted" style="--i:1"><span>Seis entregables conectados.</span></span>
+  </h2>
+  <div class="metro" id="metro">
+    <span class="metro-end a">Mercado</span><span class="metro-end b">Campaña</span>
+  </div>
+</section>
+
+<!-- =========================================================
+     CLOSING · aplicaciones
+     ========================================================= -->
+<section class="slide bone s-apps" data-scene="apps" data-steps="2" data-chapter="8" aria-roledescription="diapositiva" aria-label="Aplicaciones">
+  <div class="apps-head">
+    <h2 class="h2">Cambia el producto.<br><span class="muted">Cambia el mapa.</span></h2>
+  </div>
+  <div class="slot" aria-live="off"><span>Una serie</span></div>
+  <canvas class="apps-map" aria-hidden="true"></canvas>
+  <div class="apps-q" data-in="1">
+    <p class="h2">La pregunta es siempre la misma: ¿quién puede elegirte y cómo llegamos hasta él?</p>
+  </div>
+</section>
+
+<!-- =========================================================
+     CLOSING · antes / ahora
+     ========================================================= -->
+<section class="slide s-ba" data-scene="beforeafter" data-steps="2" data-chapter="8" aria-roledescription="diapositiva" aria-label="Antes y ahora">
+  <div class="ba before" data-in="0">
+    <p class="k">Antes</p>
+    <svg class="ba-v1" viewBox="0 0 400 260" aria-hidden="true"></svg>
+    <p class="h2"><span>Una audiencia.</span><span>Un plan de medios.</span></p>
+  </div>
+  <div class="ba now" data-in="1">
+    <p class="k">Ahora</p>
+    <svg class="ba-v2" viewBox="0 0 400 260" aria-hidden="true"></svg>
+    <p class="h2"><span>Una composición de tribus.</span><span>Una estrategia para cada una.</span><span class="lime-t">Un plan de inversión construido desde esa realidad.</span></p>
+  </div>
+</section>
+
+<!-- =========================================================
+     CLOSING · cierre
+     ========================================================= -->
+<section class="slide s-close" data-scene="close" data-chapter="8" aria-roledescription="diapositiva" aria-label="Cierre">
+  <canvas class="crowd" aria-hidden="true"></canvas>
+  <div class="veil"></div>
+  <h2 class="close-claim rise" data-in="0" style="--d:200ms">
+    <span class="ln" style="--i:0"><span>No compres audiencia.</span></span>
+    <span class="ln lime-t" style="--i:2"><span>Compra relevancia.</span></span>
+  </h2>
+  <div class="close-foot" data-in="0" style="--d:1200ms">
+    <div>
+      <p class="wordmark">TRIBE IMPACT</p>
+      <p class="h3">Del mercado a la activación.</p>
+    </div>
+    <div class="logo-slot">Espacio para logotipo corporativo</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+'use strict';
+
+/* =========================================================
+   DATOS · dataset ficticio único del caso demostrativo
+   Todas las visualizaciones se alimentan de aquí.
+   ========================================================= */
+const TOTAL = 4200000;
+const BUDGET = 500000;
+
+const TRIBES = [
+  { id:'urban',  name:'Urban Optimizers',      people:966000, color:'#5E8BFF', quote:'Hazme ganar tiempo.',
+    profile:'Profesionales urbanos que quieren un día a día más rápido, conectado y eficiente.' },
+  { id:'perf',   name:'Performance Chasers',   people:840000, color:'#FF6A3D', quote:'Hazme llegar más lejos.',
+    profile:'Orientados al rendimiento, el deporte y la mejora personal.' },
+  { id:'eco',    name:'Eco Pragmatists',       people:714000, color:'#3FD69A', quote:'Demuestra que tiene sentido.',
+    profile:'Sostenibilidad, siempre que haya utilidad y retorno económico.' },
+  { id:'social', name:'Social Explorers',      people:630000, color:'#FF8CC6', quote:'Dame una nueva forma de vivir la ciudad.',
+    profile:'Organizan su ocio alrededor de experiencias, ciudad y planes.' },
+  { id:'design', name:'Design Status Seekers', people:546000, color:'#B08CFF', quote:'Quiero que diga algo de mí.',
+    profile:'Diseño, estética y producto forman parte de su identidad.' },
+  { id:'tech',   name:'Tech Tinkerers',        people:504000, color:'#F2B544', quote:'Enséñame cómo funciona.',
+    profile:'Gadgets, especificaciones, comparativas y nuevas soluciones.' }
+];
+
+const CHANNELS = [
+  { id:'yt',     name:'YouTube' },
+  { id:'meta',   name:'Meta', sub:'Instagram · Facebook' },
+  { id:'tt',     name:'TikTok' },
+  { id:'search', name:'Search' },
+  { id:'reddit', name:'Reddit' },
+  { id:'ctv',    name:'Programmatic / CTV', short:'CTV / Prog.' }
+];
+
+/* Índice de afinidad tribu × entorno (100 = media del mercado prioritario) */
+const AFFINITY = {
+  urban:  { yt:168, meta:132, tt:96,  search:172, reddit:141, ctv:88  },
+  perf:   { yt:176, meta:148, tt:152, search:104, reddit:128, ctv:92  },
+  eco:    { yt:138, meta:144, tt:84,  search:178, reddit:96,  ctv:118 },
+  social: { yt:108, meta:164, tt:188, search:86,  reddit:64,  ctv:102 },
+  design: { yt:131, meta:186, tt:171, search:78,  reddit:58,  ctv:110 },
+  tech:   { yt:194, meta:104, tt:112, search:158, reddit:189, ctv:71  }
+};
+
+/* Inversión recomendada tribu → canal, en euros (suma 500.000 €) */
+const ALLOC = {
+  urban:  { yt:38750, meta:21250, tt:5000,  search:32500, reddit:22500, ctv:5000  },
+  perf:   { yt:39250, meta:22750, tt:26000, search:5000,  reddit:4500,  ctv:2500  },
+  eco:    { yt:26000, meta:20000, tt:4000,  search:20000, reddit:0,     ctv:10000 },
+  social: { yt:9000,  meta:22000, tt:30000, search:1000,  reddit:0,     ctv:8000  },
+  design: { yt:15000, meta:21000, tt:22000, search:500,   reddit:0,     ctv:6500  },
+  tech:   { yt:22000, meta:3000,  tt:3000,  search:11000, reddit:18000, ctv:3000  }
+};
+
+/* Solapamiento ficticio entre tribus (0-1), para la red de relaciones */
+const OVERLAP = [
+  ['urban','tech',.34],['urban','eco',.27],['social','design',.31],['perf','social',.2],
+  ['design','urban',.17],['perf','tech',.15],['eco','social',.13],['perf','urban',.12]
+];
+
+/* Perfiles en profundidad (escena de foco) */
+const PROFILES = {
+  urban: {
+    head:['No compran una bicicleta.','Compran tiempo.'],
+    formula:'Movilidad + eficiencia + tecnología útil.',
+    motiv:[['Eficiencia',184],['Ahorro de tiempo',176],['Tecnología útil',158],['Productividad',149],['Movilidad flexible',141]],
+    words:[['Trayectos',1],['Apps de movilidad',.8],['Productividad',.9],['Carril bici',.6],['Teletrabajo',.55],['Gadgets útiles',.7],['Rutinas',.5],['Ciudad en 15 minutos',.65]],
+    cmp:{ lang:'Minutos, rutas, autonomía.', creative:'Demostrar el tiempo recuperado.', codes:'Utilidad, datos, rutina.' }
+  },
+  design: {
+    head:['El mismo producto.','Otra razón para comprarlo.'],
+    formula:'Diseño + identidad + diferenciación.',
+    motiv:[['Estética',191],['Diseño',183],['Diferenciación',167],['Reconocimiento',152],['Lifestyle',146]],
+    words:[['Diseño de producto',1],['Interiorismo',.7],['Moda urbana',.85],['Arquitectura',.6],['Objetos de autor',.75],['Escena local',.55],['Materiales',.5],['Estudios creativos',.62]],
+    cmp:{ lang:'Forma, material, detalle.', creative:'El producto como objeto de deseo.', codes:'Estética, identidad, escena.' }
+  }
+};
+
+/* Simulación genérico vs plan por tribus (resultados ficticios) */
+const PLANS = {
+  generic:{ coverage:53, affinity:118, freq:2.7, cost:0 },
+  tribe:  { coverage:72, affinity:146, freq:3.1, cost:-18 }
+};
+
+/* ---------- derivados ---------- */
+const T = {}; TRIBES.forEach(function(t){ T[t.id] = t; t.share = t.people / TOTAL;
+  t.budget = CHANNELS.reduce(function(a,c){ return a + ALLOC[t.id][c.id]; }, 0); });
+CHANNELS.forEach(function(c){ c.budget = TRIBES.reduce(function(a,t){ return a + ALLOC[t.id][c.id]; }, 0);
+  c.share = c.budget / BUDGET; });
+const RANKED = CHANNELS.slice().sort(function(a,b){ return b.budget - a.budget; });
+
+/* ---------- comprobaciones matemáticas ---------- */
+(function checks(){
+  const ppl = TRIBES.reduce(function(a,t){ return a + t.people; }, 0);
+  const shr = TRIBES.reduce(function(a,t){ return a + Math.round(t.share * 100); }, 0);
+  const bud = CHANNELS.reduce(function(a,c){ return a + c.budget; }, 0);
+  const mix = CHANNELS.reduce(function(a,c){ return a + Math.round(c.share * 100); }, 0);
+  const ok = ppl === TOTAL && shr === 100 && bud === BUDGET && mix === 100;
+  const expected = { yt:150000, meta:110000, tt:90000, search:70000, reddit:45000, ctv:35000 };
+  const okMix = CHANNELS.every(function(c){ return c.budget === expected[c.id]; });
+  if(!ok || !okMix) console.warn('Tribe Impact: revisa el dataset', { ppl:ppl, shr:shr, bud:bud, mix:mix });
+})();
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+const $ = function(s, r){ return (r || document).querySelector(s); };
+const $$ = function(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  if(attrs) for(const k in attrs){ if(attrs[k] !== undefined && attrs[k] !== null) e.setAttribute(k, attrs[k]); }
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, cls, html, parent){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html !== undefined && html !== null) e.innerHTML = html;
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function fmtInt(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function fmtEur(n){ return fmtInt(n) + ' €'; }
+function fmtDec(n, d){ return n.toFixed(d).replace('.', ','); }
+function pct(x){ return Math.round(x * 100) + '%'; }
+const clamp = function(v, a, b){ return Math.max(a, Math.min(b, v)); };
+const lerp = function(a, b, t){ return a + (b - a) * t; };
+const E = {
+  out:   function(t){ return 1 - Math.pow(1 - t, 3); },
+  inOut: function(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; },
+  quart: function(t){ return t < .5 ? 8*t*t*t*t : 1 - Math.pow(-2*t + 2, 4) / 2; },
+  expo:  function(t){ return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+};
+function rng(seed){ let a = seed >>> 0; return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hex2rgb(h){ const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+function mixRgb(a, b, t){ return [lerp(a[0],b[0],t), lerp(a[1],b[1],t), lerp(a[2],b[2],t)]; }
+function rgba(c, a){ return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + a + ')'; }
+const BONE = [243,240,232];
+const INK = [9,9,9];
+TRIBES.forEach(function(t){ t.rgb = hex2rgb(t.color); });
+
+/* Reparto entero con restos mayores: mantiene las sumas exactas */
+function largestRemainder(values, total){
+  const sum = values.reduce(function(a,b){ return a + b; }, 0) || 1;
+  const raw = values.map(function(v){ return v / sum * total; });
+  const out = raw.map(Math.floor);
+  let left = total - out.reduce(function(a,b){ return a + b; }, 0);
+  raw.map(function(v,i){ return [v - Math.floor(v), i]; }).sort(function(a,b){ return b[0] - a[0]; })
+    .forEach(function(p){ if(left > 0){ out[p[1]]++; left--; } });
+  return out;
+}
+
+/* Animaciones controladas: se cancelan al salir de la diapositiva */
+function tween(owner, o){
+  const dur = REDUCED ? 0 : (o.dur || 800), delay = REDUCED ? 0 : (o.delay || 0);
+  const ease = o.ease || E.inOut;
+  const job = { dead:false, cancel:function(){ this.dead = true; } };
+  (owner._jobs || (owner._jobs = [])).push(job);
+  const t0 = performance.now() + delay;
+  function frame(now){
+    if(job.dead) return;
+    if(now < t0){ requestAnimationFrame(frame); return; }
+    const p = dur === 0 ? 1 : clamp((now - t0) / dur, 0, 1);
+    o.update(ease(p), p);
+    if(p < 1) requestAnimationFrame(frame);
+    else if(o.done) o.done();
+  }
+  if(dur === 0 && delay === 0){ o.update(1, 1); if(o.done) o.done(); }
+  else requestAnimationFrame(frame);
+  return job;
+}
+function later(owner, ms, fn){
+  const id = setTimeout(fn, REDUCED ? 0 : ms);
+  (owner._timers || (owner._timers = [])).push(id);
+  return id;
+}
+function stopAll(owner){
+  (owner._jobs || []).forEach(function(j){ j.cancel(); }); owner._jobs = [];
+  (owner._timers || []).forEach(clearTimeout); owner._timers = [];
+}
+function countTo(owner, node, to, o){
+  o = o || {};
+  const from = o.from !== undefined ? o.from : 0;
+  const f = o.fmt || fmtInt;
+  return tween(owner, { dur:o.dur || 1100, delay:o.delay || 0, ease:E.out,
+    update:function(e){ node.textContent = f(lerp(from, to, e)); } });
+}
+function size(node){ const r = node.getBoundingClientRect(); return { w:Math.max(1, r.width), h:Math.max(1, r.height) }; }
+function fitCanvas(cv){
+  const s = size(cv), d = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(s.w * d); cv.height = Math.round(s.h * d);
+  const ctx = cv.getContext('2d'); ctx.setTransform(d, 0, 0, d, 0, 0);
+  return { ctx:ctx, w:s.w, h:s.h };
+}
+function prepSvg(svg){ const s = size(svg); svg.setAttribute('viewBox', '0 0 ' + s.w + ' ' + s.h);
+  while(svg.firstChild) svg.removeChild(svg.firstChild); return s; }
+const isPortrait = function(){ return innerWidth / innerHeight < 1.05; };
+const pxVar = function(name){ const d = document.createElement('div'); d.style.cssText = 'position:absolute;visibility:hidden;width:var(' + name + ')';
+  document.body.appendChild(d); const w = d.getBoundingClientRect().width; d.remove(); return w; };
+
+/* Empaquetado de círculos (relajación determinista) para galaxia y clusters */
+function packCircles(items, cx, cy, gap, fixed){
+  const n = items.length;
+  items.forEach(function(it, i){
+    const a = -Math.PI / 2 + i * (Math.PI * 2 / n) + (i % 2 ? .18 : -.12);
+    const d = (fixed ? fixed.r : 0) + it.r + gap;
+    it.x = cx + Math.cos(a) * d * 1.05; it.y = cy + Math.sin(a) * d;
+  });
+  for(let k = 0; k < 400; k++){
+    for(let i = 0; i < n; i++){
+      const a = items[i];
+      a.x += (cx - a.x) * .012; a.y += (cy - a.y) * .012;
+      for(let j = i + 1; j < n; j++){
+        const b = items[j], dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || .01;
+        const min = a.r + b.r + gap;
+        if(dist < min){ const m = (min - dist) / 2, ux = dx / dist, uy = dy / dist;
+          a.x -= ux * m; a.y -= uy * m; b.x += ux * m; b.y += uy * m; }
+      }
+      if(fixed){ const dx = a.x - fixed.x, dy = a.y - fixed.y, dist = Math.hypot(dx, dy) || .01, min = a.r + fixed.r + gap;
+        if(dist < min){ a.x = fixed.x + dx / dist * min; a.y = fixed.y + dy / dist * min; } }
+    }
+  }
+  return items;
+}
+/* Distribución girasol dentro de un círculo */
+function sunflower(i, n, r){ const k = (i + .5) / n, rr = Math.sqrt(k) * r, a = i * 2.39996323;
+  return [Math.cos(a) * rr, Math.sin(a) * rr]; }
+
+/* =========================================================
+   ESCENAS · cada diapositiva registra build / enter / step / leave
+   ========================================================= */
+const SCENES = {};
+/* =========================================================
+   VISUALIZACIÓN · multitud (portada y cierre)
+   Un campo de trazos neutros en el que emergen seis comunidades.
+   ========================================================= */
+function buildCrowd(cv, seed, posLand, posPort){
+  const f = fitCanvas(cv), w = f.w, h = f.h, ctx = f.ctx;
+  const port = w / h < 1.05, pos = port ? posPort : posLand;
+  const sp = clamp(Math.min(w, h) / 64, 9, 16);
+  const R = rng(seed);
+  const blobs = TRIBES.map(function(t, i){ return { t:t, i:i, x:w * pos[i][0], y:h * pos[i][1],
+    s:Math.min(w, h) * (.05 + t.share * .42) }; });
+  const marks = [];
+  let row = 0;
+  for(let y = sp * .5; y < h + sp; y += sp * .86, row++){
+    for(let x = (row % 2) * sp * .5; x < w + sp; x += sp){
+      const px = x + (R() - .5) * sp * .5, py = y + (R() - .5) * sp * .4;
+      let best = 0, bi = 0;
+      for(let b = 0; b < blobs.length; b++){
+        const B = blobs[b], d2 = (px - B.x) * (px - B.x) + (py - B.y) * (py - B.y);
+        const wv = Math.exp(-d2 / (2 * B.s * B.s));
+        if(wv > best){ best = wv; bi = b; }
+      }
+      if(best < .06) best = 0;
+      marks.push({ x:px, y:py, a:(R() - .5) * .9, w:best, b:bi, r:R() });
+    }
+  }
+  const len = sp * .36;
+  function draw(p){
+    ctx.clearRect(0, 0, w, h);
+    ctx.lineCap = 'round';
+    const buckets = {};
+    for(let i = 0; i < marks.length; i++){
+      const m = marks[i];
+      const lv = Math.min(10, Math.round(m.w * p * 10 * (1.1 + m.r * .3)));
+      const key = lv === 0 ? 'n' : m.b + '_' + lv;
+      (buckets[key] || (buckets[key] = [])).push(m);
+    }
+    for(const key in buckets){
+      const list = buckets[key];
+      let col, alpha, L, lw;
+      if(key === 'n'){ col = BONE; alpha = .085; L = len; lw = sp * .13; }
+      else { const parts = key.split('_'), t = TRIBES[+parts[0]], lv = +parts[1] / 10;
+        col = mixRgb(BONE, t.rgb, Math.min(1, lv * 1.5)); alpha = .1 + lv * .85; L = len * (1 + lv * .7); lw = sp * (.13 + lv * .07); }
+      ctx.strokeStyle = rgba(col, alpha); ctx.lineWidth = lw;
+      ctx.beginPath();
+      for(let i = 0; i < list.length; i++){
+        const m = list[i], dx = Math.sin(m.a) * L * .5, dy = Math.cos(m.a) * L * .5;
+        ctx.moveTo(m.x - dx, m.y - dy); ctx.lineTo(m.x + dx, m.y + dy);
+      }
+      ctx.stroke();
+    }
+  }
+  return draw;
+}
+const COVER_POS = [[.66,.32],[.85,.56],[.6,.72],[.9,.2],[.77,.86],[.5,.44]];
+const COVER_POS_P = [[.3,.18],[.72,.12],[.56,.33],[.16,.4],[.86,.36],[.44,.06]];
+const CLOSE_POS = [[.76,.22],[.9,.44],[.76,.7],[.95,.84],[.64,.92],[.9,.1]];
+
+SCENES.cover = {
+  build:function(s){ s._draw = buildCrowd($('canvas', s), 11, COVER_POS, COVER_POS_P); },
+  enter:function(s, o){
+    if(o.instant){ s._draw(1); return; }
+    s._draw(0);
+    tween(s, { dur:2600, delay:500, ease:E.inOut, update:function(e){ s._draw(e); } });
+  }
+};
+SCENES.close = {
+  build:function(s){ s._draw = buildCrowd($('canvas', s), 23, CLOSE_POS, COVER_POS_P); },
+  enter:function(s, o){
+    if(o.instant){ s._draw(1); return; }
+    s._draw(0);
+    tween(s, { dur:2400, delay:300, ease:E.inOut, update:function(e){ s._draw(e); } });
+  }
+};
+
+/* =========================================================
+   PROBLEMA · la ficha demográfica se rompe
+   ========================================================= */
+SCENES.problem = {
+  build:function(s){
+    if(s._split) return; s._split = true;
+    const R = rng(5); let k = 0;
+    $$('[data-shatter]', s).forEach(function(line){
+      const txt = line.textContent; line.textContent = '';
+      line.setAttribute('aria-label', txt);
+      for(const ch of txt){
+        const sp = h('span', 'ch', null, line); sp.textContent = ch; sp.setAttribute('aria-hidden', 'true');
+        sp.style.setProperty('--tx', ((R() - .5) * 2.6).toFixed(2) + 'em');
+        sp.style.setProperty('--ty', ((R() - .4) * 1.5).toFixed(2) + 'em');
+        sp.style.setProperty('--r', ((R() - .5) * 50).toFixed(1) + 'deg');
+        sp.style.setProperty('--k', k++);
+      }
+    });
+  }
+};
+
+/* =========================================================
+   DE TARGET A TRIBUS · WOW 1
+   Una masa homogénea se separa en seis clusters proporcionales.
+   ========================================================= */
+SCENES.cluster = {
+  build:function(s){
+    const f = fitCanvas($('canvas', s)); s._f = f;
+    const w = f.w, h = f.h, port = w / h < 1.05;
+    const R = rng(42);
+    const N = Math.round(clamp(w * h / 720, 700, 2400));
+    const cx = port ? w * .5 : w * .64, cy = port ? h * .66 : h * .53;
+    const R0 = port ? Math.min(w * .4, h * .24) : Math.min(w * .27, h * .36);
+    const dot = clamp(Math.sqrt(w * h) / 820, 1.4, 2.4);
+    const cl = TRIBES.map(function(t){ return { t:t, r:R0 * Math.sqrt(t.share) * 1.04 }; });
+    packCircles(cl, cx, cy, R0 * .2);
+    /* encajar en su zona */
+    const reg = port ? { x0:w * .05, x1:w * .95, y0:h * .38, y1:h * .96 } : { x0:w * .36, x1:w * .95, y0:h * .08, y1:h * .93 };
+    let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
+    cl.forEach(function(c){ bx0 = Math.min(bx0, c.x - c.r); bx1 = Math.max(bx1, c.x + c.r); by0 = Math.min(by0, c.y - c.r); by1 = Math.max(by1, c.y + c.r); });
+    const sc = Math.min(1, (reg.x1 - reg.x0) / (bx1 - bx0), (reg.y1 - reg.y0) / (by1 - by0));
+    const mx = (bx0 + bx1) / 2, my = (by0 + by1) / 2, tx = (reg.x0 + reg.x1) / 2, ty = (reg.y0 + reg.y1) / 2;
+    cl.forEach(function(c){ c.x = tx + (c.x - mx) * sc; c.y = ty + (c.y - my) * sc; c.r *= sc; });
+    const counts = largestRemainder(TRIBES.map(function(t){ return t.share; }), N);
+    const slots = []; for(let i = 0; i < N; i++) slots.push(i);
+    for(let i = N - 1; i > 0; i--){ const j = Math.floor(R() * (i + 1)); const tmp = slots[i]; slots[i] = slots[j]; slots[j] = tmp; }
+    const P = []; let idx = 0;
+    const bcx = port ? w * .5 : w * .63, bcy = port ? h * .67 : h * .53, br = R0 * 1.05 * Math.min(1, sc * 1.15);
+    TRIBES.forEach(function(t, ti){
+      const c = cl[ti];
+      for(let j = 0; j < counts[ti]; j++){
+        const a = sunflower(slots[idx], N, br), b = sunflower(j, counts[ti], c.r * .96);
+        P.push({ ti:ti, sx:bcx + a[0], sy:bcy + a[1], tx:c.x + b[0] + (R() - .5) * dot * 2, ty:c.y + b[1] + (R() - .5) * dot * 2, d:R() * .32 });
+        idx++;
+      }
+    });
+    s._P = P; s._dot = dot; s._p = s._p || 0;
+  },
+  draw:function(s, p){
+    const f = s._f, ctx = f.ctx, P = s._P, dot = s._dot;
+    ctx.clearRect(0, 0, f.w, f.h);
+    const cp = E.inOut(clamp((p - .15) / .7, 0, 1));
+    const paths = TRIBES.map(function(){ return new Path2D(); });
+    for(let i = 0; i < P.length; i++){
+      const q = P[i], lt = E.inOut(clamp((p - q.d) / .68, 0, 1));
+      const x = lerp(q.sx, q.tx, lt), y = lerp(q.sy, q.ty, lt);
+      paths[q.ti].moveTo(x + dot, y); paths[q.ti].arc(x, y, dot, 0, Math.PI * 2);
+    }
+    TRIBES.forEach(function(t, i){ ctx.fillStyle = rgba(mixRgb([150,148,142], t.rgb, cp), .55 + cp * .4); ctx.fill(paths[i]); });
+    s._p = p;
+  },
+  enter:function(s, o){ SCENES.cluster.draw(s, o.step >= 1 ? 1 : 0); },
+  step:function(s, k, prev, instant){
+    const from = s._p, to = k >= 1 ? 1 : 0;
+    if(instant){ SCENES.cluster.draw(s, to); return; }
+    tween(s, { dur:to ? 2400 : 1100, delay:to ? 250 : 0, ease:function(t){ return t; },
+      update:function(e){ SCENES.cluster.draw(s, lerp(from, to, e)); } });
+  }
+};
+
+/* =========================================================
+   CINCO PREGUNTAS
+   ========================================================= */
+SCENES.questions = {
+  step:function(s, k){
+    const qs = $$('.q', s);
+    qs.forEach(function(q, i){
+      q.classList.toggle('is-shown', i <= k);
+      q.classList.toggle('is-past', i < k && k < 5);
+    });
+    $('.qs', s).style.setProperty('--qp', Math.min(k, 4) / 4);
+  }
+};
+
+/* =========================================================
+   QUÉ ANALIZAMOS · ecosistema de señales
+   ========================================================= */
+SCENES.signals = {
+  build:function(s){
+    const svg = $('.sig-viz', s), d = prepSvg(svg), w = d.w, h = d.h;
+    const R = rng(8), m = Math.min(w, h), cx = w / 2, cy = h / 2;
+    const fs = clamp(m * .03, 11, 19), rc = m * .1;
+    const ex = clamp(w / h, 1, 1.45);
+    const names = ['Conversación','Intereses','Búsquedas','Comunidades','Consumo de contenido','Afinidades','Comportamiento digital','Contexto','Creators','Plataformas'];
+    const nodes = names.map(function(n, i){
+      const a = -Math.PI / 2 + i * Math.PI * 2 / names.length + (R() - .5) * .16;
+      const r = i % 2 ? m * .41 : m * .27;
+      const q = { n:n, a:a, x:cx + Math.cos(a) * r * ex * .92, y:cy + Math.sin(a) * r };
+      const right = Math.cos(a) >= -.05, lw = n.length * fs * .56 + fs * 1.4;
+      if(right && q.x + lw > w - 4) q.x = w - 4 - lw; if(!right && q.x - lw < 4) q.x = 4 + lw;
+      return q;
+    });
+    const gCross = el('g', null, svg), gLines = el('g', null, svg), gNodes = el('g', null, svg);
+    nodes.forEach(function(p, i){
+      const q = nodes[(i + 3) % nodes.length];
+      el('line', { class:'sig-cross', x1:p.x, y1:p.y, x2:q.x, y2:q.y }, gCross);
+    });
+    nodes.forEach(function(p, i){
+      const sx = cx + Math.cos(p.a) * rc, sy = cy + Math.sin(p.a) * rc;
+      const mxp = (sx + p.x) / 2 + Math.cos(p.a + Math.PI / 2) * m * .04, myp = (sy + p.y) / 2 + Math.sin(p.a + Math.PI / 2) * m * .04;
+      const dd = 'M' + sx + ',' + sy + ' Q' + mxp + ',' + myp + ' ' + p.x + ',' + p.y;
+      el('path', { class:'sig-line', d:dd, pathLength:1, style:'--d:' + (250 + i * 110) + 'ms' }, gLines);
+      el('path', { class:'sig-flow', d:dd, pathLength:20, style:'--d:' + (1400 + i * 60) + 'ms;animation-delay:-' + (i * .9) + 's' }, gLines);
+      const g = el('g', { class:'sig-node', style:'--d:' + (550 + i * 110) + 'ms' }, gNodes);
+      el('circle', { cx:p.x, cy:p.y, r:fs * .75, fill:'none', stroke:'rgba(243,240,232,.25)' }, g);
+      el('circle', { cx:p.x, cy:p.y, r:fs * .26, fill:'#F3F0E8' }, g);
+      const right = Math.cos(p.a) >= -.05, lw = p.n.length * fs * .56 + fs * 1.4;
+      if(right && p.x + lw > w - 4){ p.x = w - 4 - lw; } if(!right && p.x - lw < 4){ p.x = 4 + lw; }
+      const t = el('text', { x:p.x + (right ? fs * 1.3 : -fs * 1.3), y:p.y + fs * .36, 'text-anchor':right ? 'start' : 'end',
+        fill:'#F3F0E8', 'font-size':fs, 'font-weight':600 }, g);
+      t.textContent = p.n;
+    });
+    const c = el('g', { class:'sig-center' }, svg);
+    el('circle', { cx:cx, cy:cy, r:rc * 1.55, fill:'none', stroke:'rgba(223,255,63,.25)' }, c);
+    el('circle', { cx:cx, cy:cy, r:rc, fill:'#DFFF3F' }, c);
+    const t1 = el('text', { x:cx, y:cy + fs * .35, 'text-anchor':'middle', fill:'#090909', 'font-size':fs * 1.05, 'font-weight':800 }, c);
+    t1.textContent = 'Tu producto';
+  }
+};
+
+/* =========================================================
+   CÓMO FUNCIONA · pipeline de cinco transformaciones
+   ========================================================= */
+SCENES.pipeline = {
+  build:function(s){
+    const pipe = $('#pipe', s); if(pipe.childNodes.length) return;
+    const R = rng(3), ink = '#090909', N = 36;
+    const pts = []; for(let i = 0; i < N; i++) pts.push([12 + R() * 96, 12 + R() * 96]);
+    function glyph(fn){ const svg = el('svg', { class:'glyph', viewBox:'0 0 120 120', 'aria-hidden':'true' }); fn(svg); return svg; }
+    const stages = [
+      ['Datos', glyph(function(g){ pts.forEach(function(p, k){ el('circle', { cx:p[0], cy:p[1], r:2.6, fill:ink, style:'--g:' + k * 8 + 'ms' }, g); }); })],
+      ['Patrones', glyph(function(g){ for(let k = 0; k < N; k++){ const row = k % 4, col = Math.floor(k / 4);
+        el('circle', { cx:14 + col * 11.5, cy:26 + row * 22 + Math.sin(col * .8 + row) * 4, r:2.6, fill:ink, style:'--g:' + k * 8 + 'ms' }, g); } })],
+      ['Comunidades', glyph(function(g){ const cs = [[36,38],[84,32],[40,86],[86,82]];
+        for(let k = 0; k < N; k++){ const c = cs[k % 4], p = sunflower(Math.floor(k / 4), 9, 15);
+          el('circle', { cx:c[0] + p[0], cy:c[1] + p[1], r:2.6, fill:ink, style:'--g:' + k * 8 + 'ms' }, g); } })],
+      ['Tribus', glyph(function(g){ const cs = [[34,34],[84,30],[92,76],[58,62],[28,86],[66,100]];
+        const cnt = largestRemainder(TRIBES.map(function(t){ return t.share; }), N); let k = 0;
+        TRIBES.forEach(function(t, i){ for(let j = 0; j < cnt[i]; j++){ const p = sunflower(j, cnt[i], 4 + cnt[i] * 1.5);
+          el('circle', { cx:cs[i][0] + p[0], cy:cs[i][1] + p[1], r:2.6, fill:t.color, style:'--g:' + (k++) * 8 + 'ms' }, g); } }); })],
+      ['Activación', glyph(function(g){ const max = TRIBES[0].budget;
+        TRIBES.forEach(function(t, i){ const hh = 86 * t.budget / max;
+          el('rect', { x:10 + i * 17.5, y:106 - hh, width:13, height:hh, fill:t.color, style:'--g:' + i * 60 + 'ms' }, g); });
+        el('line', { x1:6, x2:114, y1:107, y2:107, stroke:ink, 'stroke-width':1.5 }, g); })]
+    ];
+    stages.forEach(function(st, i){
+      const d = h('div', 'stage', null, pipe); d.style.setProperty('--i', i);
+      d.appendChild(st[1]); h('p', 'stage-n', st[0], d);
+    });
+    const verbs = ['Detectamos.','Clusterizamos.','Dimensionamos.','Caracterizamos.','Localizamos.','Optimizamos.'];
+    const vb = $('#verbs', s);
+    verbs.forEach(function(v, i){ const sp = h('span', null, v, vb); sp.style.setProperty('--i', i); });
+  }
+};
+
+/* =========================================================
+   CASO VOLT ONE · ciudad abstracta con un trayecto
+   ========================================================= */
+SCENES.volt = {
+  build:function(s){
+    const svg = $('.city', s), d = prepSvg(svg), w = d.w, hh = d.h, R = rng(19);
+    const sp = clamp(w / 24, 42, 86);
+    const g = el('g', { transform:'rotate(-17 ' + w * .7 + ' ' + hh * .5 + ')' }, svg);
+    const ext = Math.max(w, hh) * 1.3;
+    for(let x = -ext * .3; x < w + ext * .3; x += sp){
+      for(let y = -ext * .3; y < hh + ext * .3; y += sp){
+        if(R() > .1) el('line', { x1:x, y1:y, x2:x, y2:y + sp, stroke:'rgba(243,240,232,.09)', 'stroke-width':1 }, g);
+        if(R() > .1) el('line', { x1:x, y1:y, x2:x + sp, y2:y, stroke:'rgba(243,240,232,.09)', 'stroke-width':1 }, g);
+      }
+    }
+    el('line', { x1:-ext * .3, y1:hh * .35, x2:w + ext * .3, y2:hh * .35 + sp * 2, stroke:'rgba(243,240,232,.16)', 'stroke-width':4 }, g);
+    el('line', { x1:w * .62, y1:-ext * .3, x2:w * .62 + sp * 3, y2:hh + ext * .3, stroke:'rgba(243,240,232,.16)', 'stroke-width':4 }, g);
+    const ox = Math.round(w * .56 / sp) * sp, oy = Math.round(hh * .92 / sp) * sp;
+    const steps = [[2,0],[0,-2],[3,0],[0,-1],[1,0],[0,-3],[2,0],[0,-2]];
+    let x = ox, y = oy, dd = 'M' + x + ',' + y;
+    steps.forEach(function(st){ x += st[0] * sp; y += st[1] * sp; dd += ' L' + x + ',' + y; });
+    el('path', { class:'city-route', d:dd, pathLength:1 }, g);
+    const e = el('g', { class:'city-end' }, g);
+    el('circle', { cx:ox, cy:oy, r:6, fill:'#DFFF3F' }, g);
+    el('circle', { cx:x, cy:y, r:18, fill:'none', stroke:'rgba(223,255,63,.5)' }, e);
+    el('circle', { cx:x, cy:y, r:7, fill:'#DFFF3F' }, e);
+  },
+  enter:function(s, o){
+    const n = $('.volt-n', s);
+    if(o.instant){ n.textContent = '4,2'; return; }
+    n.textContent = '0,0';
+    countTo(s, n, 4.2, { dur:1400, delay:450, fmt:function(v){ return fmtDec(v, 1); } });
+  }
+};
+
+/* =========================================================
+   GALAXIA DE TRIBUS · WOW 2
+   ========================================================= */
+function galaxyLayout(w, hh){
+  const port = w / hh < 1.05;
+  const cx = port ? w * .5 : w * .62, cy = port ? hh * .62 : hh * .53;
+  const k = port ? Math.min(w * .52, hh * .32) : Math.min(w * .3, hh * .46);
+  const center = { x:cx, y:cy, r:k * .17 };
+  const items = TRIBES.map(function(t){ return { t:t, r:k * Math.sqrt(t.share * 6) * .4 }; });
+  packCircles(items, cx, cy, k * .09, center);
+  const reg = port ? { x0:w * .04, x1:w * .96, y0:hh * .3, y1:hh * .97 } : { x0:w * .33, x1:w * .95, y0:hh * .07, y1:hh * .93 };
+  let bx0 = center.x - center.r, bx1 = center.x + center.r, by0 = center.y - center.r, by1 = center.y + center.r;
+  items.forEach(function(c){ bx0 = Math.min(bx0, c.x - c.r); bx1 = Math.max(bx1, c.x + c.r); by0 = Math.min(by0, c.y - c.r); by1 = Math.max(by1, c.y + c.r); });
+  const sc = Math.min(1.15, (reg.x1 - reg.x0) / (bx1 - bx0), (reg.y1 - reg.y0) / (by1 - by0));
+  const mx = (bx0 + bx1) / 2, my = (by0 + by1) / 2, tx = (reg.x0 + reg.x1) / 2, ty = (reg.y0 + reg.y1) / 2;
+  const tr = function(o){ o.x = tx + (o.x - mx) * sc; o.y = ty + (o.y - my) * sc; o.r *= sc; };
+  items.forEach(tr); tr(center);
+  return { center:center, items:items, port:port };
+}
+function splitName(n){ const i = n.lastIndexOf(' '); return [n.slice(0, i), n.slice(i + 1)]; }
+
+SCENES.galaxy = {
+  build:function(s){
+    const svg = $('.gx', s), d = prepSvg(svg), w = d.w, hh = d.h;
+    const L = galaxyLayout(w, hh), R = rng(77), c0 = L.center;
+    s._L = L;
+    const gRel = el('g', null, svg), gSp = el('g', null, svg), gCl = el('g', null, svg);
+    const byId = {}; L.items.forEach(function(it){ byId[it.t.id] = it; });
+    OVERLAP.forEach(function(o, i){
+      const a = byId[o[0]], b = byId[o[1]];
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, vx = mx - c0.x, vy = my - c0.y, vl = Math.hypot(vx, vy) || 1;
+      const off = Math.hypot(a.x - b.x, a.y - b.y) * .22, qx = mx + vx / vl * off, qy = my + vy / vl * off;
+      const ea = function(p){ const dx = qx - p.x, dy = qy - p.y, dl = Math.hypot(dx, dy) || 1; return [p.x + dx / dl * p.r, p.y + dy / dl * p.r]; };
+      const pa = ea(a), pb = ea(b);
+      el('path', { class:'rel', d:'M' + pa[0] + ',' + pa[1] + ' Q' + qx + ',' + qy + ' ' + pb[0] + ',' + pb[1],
+        'stroke-width':(1 + o[2] * 16).toFixed(1), style:'--d:' + i * 90 + 'ms' }, gRel);
+    });
+    L.items.forEach(function(it){
+      const dx = it.x - c0.x, dy = it.y - c0.y, dl = Math.hypot(dx, dy) || 1;
+      el('line', { class:'spoke', x1:c0.x + dx / dl * c0.r, y1:c0.y + dy / dl * c0.r, x2:it.x - dx / dl * it.r, y2:it.y - dy / dl * it.r }, gSp);
+    });
+    s._cl = L.items.map(function(it){
+      const t = it.t, g = el('g', { class:'cl', tabindex:0, role:'img', 'aria-label':t.name + ', ' + pct(t.share) + ', ' + fmtInt(t.people) + ' personas' }, gCl);
+      const inner = el('g', null, g);
+      el('circle', { r:it.r, fill:t.color, 'fill-opacity':.07, stroke:t.color, 'stroke-opacity':.5 }, inner);
+      const n = Math.round(t.share * 820), dr = clamp(it.r * .019, 1.3, 3.1);
+      for(let j = 0; j < n; j++){ const p = sunflower(j, n, it.r * .9);
+        el('circle', { cx:p[0] + (R() - .5) * dr * 2, cy:p[1] + (R() - .5) * dr * 2, r:dr * (.7 + R() * .6), fill:t.color, 'fill-opacity':(.35 + R() * .6).toFixed(2) }, inner); }
+      const fsP = it.r * .38, fsN = clamp(it.r * .135, 12, 23);
+      const tp = el('text', { y:fsP * .18, 'text-anchor':'middle', fill:'#F3F0E8', 'font-size':fsP, 'font-weight':800, 'letter-spacing':'-.04em',
+        style:'paint-order:stroke;stroke:rgba(9,9,9,.62);stroke-width:' + fsP * .12 + 'px' }, inner);
+      tp.textContent = pct(t.share);
+      const nm = splitName(t.name);
+      nm.forEach(function(line, li){
+        const tn = el('text', { y:fsP * .18 + fsN * 1.5 + li * fsN * 1.12, 'text-anchor':'middle', fill:'#F3F0E8', 'font-size':fsN, 'font-weight':700,
+          style:'paint-order:stroke;stroke:rgba(9,9,9,.7);stroke-width:' + fsN * .3 + 'px' }, inner);
+        tn.textContent = line;
+      });
+      g.setAttribute('transform', 'translate(' + it.x + ' ' + it.y + ')');
+      const on = function(){ SCENES.galaxy.focus(s, it, g); }, off = function(){ SCENES.galaxy.focus(s, null); };
+      g.addEventListener('mouseenter', on); g.addEventListener('focus', on);
+      g.addEventListener('mouseleave', off); g.addEventListener('blur', off);
+      return { it:it, g:g, inner:inner };
+    });
+    const cg = el('g', null, svg);
+    el('circle', { cx:c0.x, cy:c0.y, r:c0.r, fill:'#F3F0E8' }, cg);
+    const ct = el('text', { x:c0.x, y:c0.y + c0.r * .12, 'text-anchor':'middle', fill:'#090909', 'font-size':c0.r * .34, 'font-weight':800 }, cg);
+    ct.textContent = 'Volt One';
+  },
+  focus:function(s, it, g){
+    const svg = $('.gx', s), info = $('.gx-info', s);
+    s._cl.forEach(function(c){ c.g.classList.toggle('focus', c.g === g); });
+    svg.classList.toggle('has-focus', !!it);
+    s.classList.toggle('hovering', !!it);
+    if(it){
+      $('b', info).textContent = it.t.name; $('b', info).style.color = it.t.color;
+      $('.q', info).innerHTML = fmtInt(it.t.people) + ' personas. ' + it.t.profile + '<br><span class="muted">«' + it.t.quote + '»</span>';
+    }
+    info.classList.toggle('show', !!it);
+  },
+  enter:function(s, o){
+    s._cl.forEach(function(c, i){
+      const it = c.it;
+      if(o.instant){ c.inner.setAttribute('transform', ''); return; }
+      c.inner.setAttribute('transform', 'scale(0)');
+      tween(s, { dur:1100, delay:250 + i * 130, ease:E.out, update:function(e){
+        c.inner.setAttribute('transform', 'rotate(' + ((1 - e) * -35).toFixed(2) + ') scale(' + e.toFixed(4) + ')'); } });
+    });
+  },
+  step:function(s, k){ $('.gx', s).classList.toggle('show-rel', k >= 1); }
+};
+
+/* =========================================================
+   COMPOSICIÓN · burbujas → barra 100%
+   ========================================================= */
+SCENES.composition = {
+  build:function(s){
+    const svg = $('.cmpv', s), d = prepSvg(svg), w = d.w, hh = d.h;
+    const L = galaxyLayout(w, hh), port = L.port;
+    const pad = pxVar('--pad'), railW = w > 960 ? 64 : 0;
+    const fs1 = clamp(Math.min(w * .04, hh * .075), 22, 78), fs2 = clamp(Math.min(w * .0115, hh * .02), 11, 21);
+    const segs = [];
+    if(!port){
+      const x0 = pad, W = w - pad * 2 - railW, y = hh * .47, bh = clamp(hh * .15, 36, 160);
+      let cum = 0;
+      TRIBES.forEach(function(t){ segs.push({ x:x0 + cum * W, y:y, w:t.share * W - 3, h:bh }); cum += t.share; });
+    } else {
+      const x0 = pad, bw = w * .2, y0 = hh * .3, H = hh * .64;
+      let cum = 0;
+      TRIBES.forEach(function(t){ segs.push({ x:x0, y:y0 + cum * H, w:bw, h:t.share * H - 3 }); cum += t.share; });
+    }
+    s._shapes = TRIBES.map(function(t, i){
+      const it = L.items[i], sg = segs[i];
+      const r = el('rect', { fill:t.color }, svg);
+      const from = { x:it.x - it.r, y:it.y - it.r, w:it.r * 2, h:it.r * 2, rx:it.r, o:.22 };
+      const to = { x:sg.x, y:sg.y, w:sg.w, h:sg.h, rx:0, o:.95 };
+      const lab = el('g', { class:'cmp-lab', style:'--d:' + (i * 110) + 'ms' }, svg);
+      let lx, ly;
+      if(!port){ lx = sg.x; ly = sg.y + sg.h + fs1 * 1.15; }
+      else { lx = sg.x + sg.w + 16; ly = sg.y + sg.h / 2 - fs2 * .6; }
+      const tp = el('text', { x:lx, y:ly, fill:t.color, 'font-size':port ? fs1 * .7 : fs1, 'font-weight':800, 'letter-spacing':'-.04em' }, lab);
+      tp.textContent = pct(t.share);
+      const lines = port ? [t.name] : splitName(t.name);
+      lines.forEach(function(line, li){
+        const tn = el('text', { x:port ? lx + fs1 * 1.9 : lx, y:port ? ly : ly + fs2 * 1.6 + li * fs2 * 1.2, fill:'#F3F0E8', 'font-size':fs2, 'font-weight':700 }, lab);
+        tn.textContent = line;
+      });
+      const tpp = el('text', { x:port ? lx + fs1 * 1.9 : lx, y:port ? ly + fs2 * 1.3 : ly + fs2 * 1.6 + lines.length * fs2 * 1.2 + fs2 * .25,
+        fill:'rgba(243,240,232,.6)', 'font-size':fs2 * .92, 'font-weight':500 }, lab);
+      tpp.textContent = fmtInt(t.people);
+      return { r:r, from:from, to:to, lab:lab };
+    });
+    if(!port){
+      const tot = el('text', { x:segs[5].x + segs[5].w, y:segs[0].y - fs2 * .9, 'text-anchor':'end', fill:'rgba(243,240,232,.6)', 'font-size':fs2, 'font-weight':600, class:'cmp-lab', style:'--d:800ms' }, svg);
+      tot.textContent = '4.200.000 personas · 100%';
+      s._tot = tot;
+    }
+  },
+  apply:function(sh, p){
+    const a = sh.from, b = sh.to;
+    sh.r.setAttribute('x', lerp(a.x, b.x, p)); sh.r.setAttribute('y', lerp(a.y, b.y, p));
+    sh.r.setAttribute('width', Math.max(0, lerp(a.w, b.w, p))); sh.r.setAttribute('height', Math.max(0, lerp(a.h, b.h, p)));
+    const rr = lerp(a.rx, b.rx, p); sh.r.setAttribute('rx', rr); sh.r.setAttribute('ry', rr);
+    sh.r.setAttribute('fill-opacity', lerp(a.o, b.o, p));
+  },
+  enter:function(s, o){
+    const sc = SCENES.composition;
+    const labs = function(on){ s._shapes.forEach(function(sh){ sh.lab.classList.toggle('show', on); }); if(s._tot) s._tot.classList.toggle('show', on); };
+    if(o.instant){ s._shapes.forEach(function(sh){ sc.apply(sh, 1); }); labs(true); return; }
+    labs(false);
+    s._shapes.forEach(function(sh, i){
+      sc.apply(sh, 0);
+      tween(s, { dur:1300, delay:700 + i * 90, ease:E.quart, update:function(e){ sc.apply(sh, e); } });
+    });
+    later(s, 1900, function(){ labs(true); });
+  }
+};
+/* =========================================================
+   FOCO DE TRIBU · WOW 3
+   Zoom desde la barra del mercado a una sola tribu y cambio de foco.
+   ========================================================= */
+SCENES.focus = {
+  build:function(s){
+    const svg = $('.focus-zoom', s), d = prepSvg(svg), w = d.w, hh = d.h, port = w / hh < 1.05;
+    s._port = port;
+    const bw = Math.min(w * .5, 760), bh = clamp(hh * .045, 18, 44), x0 = (w - bw) / 2, y0 = (hh - bh) / 2;
+    let cum = 0;
+    s._bars = TRIBES.map(function(t){ const r = el('rect', { fill:t.color }, svg);
+      const g = { x:x0 + cum * bw, y:y0, w:t.share * bw - 2, h:bh, rx:0, o:.95 }; cum += t.share; return { r:r, bar:g, t:t }; });
+    s._disk = function(id){
+      const t = T[id], base = port ? Math.min(w, hh) * .36 : hh * .46;
+      const R = base * Math.sqrt(t.share / T.urban.share), cx = port ? w * .5 : w * .23, cy = port ? hh * .26 : hh * .5;
+      return { x:cx - R, y:cy - R, w:R * 2, h:R * 2, rx:R, o:.16 };
+    };
+    /* panel derecho: barras de motivación y entornos */
+    const bars = $('.fp-bars', s); bars.innerHTML = '';
+    for(let i = 0; i < 5; i++) bars.insertAdjacentHTML('beforeend', '<div class="fp-bar"><span class="k"></span><span class="tr"><span class="fl"></span></span><span class="v num"></span></div>');
+    const pl = $('.fp-plat', s); pl.innerHTML = '';
+    for(let i = 0; i < 4; i++) pl.insertAdjacentHTML('beforeend', '<div><b></b><span></span></div>');
+    /* comparativa final */
+    const a = T.urban, b = T.design, pa = PROFILES.urban, pb = PROFILES.design;
+    const top = function(id){ return CHANNELS.slice().sort(function(x, y){ return AFFINITY[id][y.id] - AFFINITY[id][x.id]; }).slice(0, 3)
+      .map(function(c){ return c.name; }).join(', '); };
+    $('.cmp', s).innerHTML = '<table><thead><tr><th scope="col"><span class="sr">Dimensión</span></th>' +
+      '<th scope="col" style="color:' + a.color + '">' + a.name + '</th><th scope="col" style="color:' + b.color + '">' + b.name + '</th></tr></thead><tbody>' +
+      '<tr><th scope="row">Lenguaje</th><td>' + pa.cmp.lang + '</td><td>' + pb.cmp.lang + '</td></tr>' +
+      '<tr><th scope="row">Plataformas</th><td>' + top('urban') + '</td><td>' + top('design') + '</td></tr>' +
+      '<tr><th scope="row">Propuesta creativa</th><td>' + pa.cmp.creative + '</td><td>' + pb.cmp.creative + '</td></tr>' +
+      '<tr><th scope="row">Códigos</th><td>' + pa.cmp.codes + '</td><td>' + pb.cmp.codes + '</td></tr></tbody></table>';
+  },
+  render:function(s, id){
+    const t = T[id], p = PROFILES[id];
+    s._cur = id;
+    s.style.setProperty('--tc', t.color);
+    $('.f-name', s).textContent = t.name;
+    $('.f-share', s).textContent = pct(t.share);
+    $('.f-people', s).textContent = fmtInt(t.people) + ' personas';
+    $('.f-head', s).innerHTML = p.head[0] + '<br>' + p.head[1];
+    $('.f-formula', s).textContent = p.formula;
+    $$('.fp-bar', s).forEach(function(row, i){
+      $('.k', row).textContent = p.motiv[i][0]; $('.v', row).textContent = p.motiv[i][1];
+      $('.fl', row).style.width = (p.motiv[i][1] / 2) + '%';
+    });
+    $('.fp-words', s).innerHTML = p.words.map(function(wd){
+      return '<span style="font-size:calc(var(--f-body) * ' + (.85 + wd[1] * .95).toFixed(2) + ');color:' + (wd[1] >= .8 ? t.color : 'var(--bone)') +
+        ';opacity:' + (.5 + wd[1] * .5).toFixed(2) + '">' + wd[0] + '</span>'; }).join('');
+    const tops = CHANNELS.slice().sort(function(a, b){ return AFFINITY[id][b.id] - AFFINITY[id][a.id]; }).slice(0, 4);
+    $$('.fp-plat > div', s).forEach(function(dv, i){ $('b', dv).textContent = AFFINITY[id][tops[i].id]; $('span', dv).textContent = tops[i].name; });
+  },
+  shape:function(r, g){ r.setAttribute('x', g.x); r.setAttribute('y', g.y); r.setAttribute('width', Math.max(0, g.w)); r.setAttribute('height', Math.max(0, g.h));
+    r.setAttribute('rx', g.rx); r.setAttribute('ry', g.rx); r.setAttribute('fill-opacity', g.o); },
+  mixG:function(a, b, e){ return { x:lerp(a.x, b.x, e), y:lerp(a.y, b.y, e), w:lerp(a.w, b.w, e), h:lerp(a.h, b.h, e), rx:lerp(a.rx, b.rx, e), o:lerp(a.o, b.o, e) }; },
+  enter:function(s, o){
+    const F = SCENES.focus, id = o.step >= 3 ? 'design' : 'urban';
+    F.render(s, id);
+    const main = s._bars[0];
+    main.r.setAttribute('fill', T[id].color);
+    s._geo = s._disk(id);
+    if(o.instant){
+      s._bars.forEach(function(b, i){ if(i) b.r.setAttribute('opacity', 0); });
+      F.shape(main.r, s._geo); return;
+    }
+    s._bars.forEach(function(b){ b.r.setAttribute('opacity', 1); F.shape(b.r, b.bar); });
+    const target = s._geo;
+    tween(s, { dur:1200, delay:450, ease:E.quart, update:function(e){
+      F.shape(main.r, F.mixG(main.bar, target, e));
+      s._bars.forEach(function(b, i){ if(i) b.r.setAttribute('opacity', 1 - clamp(e * 2.2, 0, 1)); });
+    } });
+  },
+  step:function(s, k, prev, instant){
+    const F = SCENES.focus, want = k >= 3 ? 'design' : 'urban';
+    if(want === s._cur) return;
+    const main = s._bars[0].r, from = s._geo, to = s._disk(want);
+    const c0 = T[s._cur].rgb, c1 = T[want].rgb;
+    s._geo = to;
+    if(instant){ F.render(s, want); main.setAttribute('fill', T[want].color); F.shape(main, to); return; }
+    s.classList.add('swapping');
+    later(s, 300, function(){ F.render(s, want); s.classList.remove('swapping'); });
+    tween(s, { dur:1000, ease:E.inOut, update:function(e){
+      F.shape(main, F.mixG(from, to, e)); main.setAttribute('fill', rgba(mixRgb(c0, c1, e), 1)); } });
+  }
+};
+
+/* =========================================================
+   SEIS TRIBUS, SEIS MOTIVACIONES
+   ========================================================= */
+SCENES.motivations = {
+  build:function(s){
+    const ul = $('.mv-list', s); if(ul.childNodes.length) return;
+    TRIBES.forEach(function(t){
+      const li = h('li', null, '<span class="tk"></span><span class="nm">' + t.name + '</span><span class="qt">«' + t.quote + '»</span>', ul);
+      li.style.setProperty('--c', t.color); li.style.setProperty('--s', (t.share / TRIBES[0].share).toFixed(3));
+    });
+  },
+  step:function(s, k){
+    $$('.mv-list li', s).forEach(function(li, i){ li.classList.toggle('shown', i <= k); li.classList.toggle('cur', i === k && k < 6); });
+    const a = $('.mv-q.a', s), b = $('.mv-q.b', s), end = $('.mv-end', s);
+    if(k < 6){
+      const t = TRIBES[k];
+      s._flip = !s._flip;
+      const on = s._flip ? a : b, off = s._flip ? b : a;
+      $('.who', on).textContent = t.name; $('.who', on).style.color = t.color;
+      $('.say', on).textContent = '«' + t.quote + '»'; $('.say', on).style.color = 'var(--bone)';
+      on.classList.add('show'); off.classList.remove('show'); end.classList.remove('show');
+    } else { a.classList.remove('show'); b.classList.remove('show'); end.classList.add('show'); }
+  }
+};
+
+/* =========================================================
+   DÓNDE VIVEN · heatmap de afinidad
+   ========================================================= */
+SCENES.heatmap = {
+  build:function(s){
+    const svg = $('.hm', s), d = prepSvg(svg), w = d.w, hh = d.h, port = w / hh < 1.05;
+    const fs = clamp(Math.min(w * .0115, hh * .042), 10.5, 20);
+    const labelW = port ? w * .34 : clamp(w * .2, 150, 310), top = fs * 3.4;
+    const cw = (w - labelW) / CHANNELS.length, ch = Math.min((hh - top) / TRIBES.length, cw * (port ? 1.1 : .62));
+    CHANNELS.forEach(function(c, j){
+      const x = labelW + j * cw + cw / 2;
+      const t = el('text', { x:x, y:fs * 1.3, 'text-anchor':'middle', fill:'#F3F0E8', 'font-size':fs, 'font-weight':700 }, svg);
+      t.textContent = port ? (c.id === 'ctv' ? 'CTV' : c.id === 'yt' ? 'YT' : c.name) : c.name;
+      if(port) t.setAttribute('font-size', fs * .82);
+      if(c.sub && !port){ const t2 = el('text', { x:x, y:fs * 2.5, 'text-anchor':'middle', fill:'rgba(243,240,232,.55)', 'font-size':fs * .78 }, svg); t2.textContent = c.sub; }
+    });
+    s._rows = TRIBES.map(function(t, i){
+      const g = el('g', { class:'row', tabindex:0, role:'img', 'aria-label':t.name + ': ' + CHANNELS.map(function(c){ return c.name + ' ' + AFFINITY[t.id][c.id]; }).join(', ') }, svg);
+      const y = top + i * ch;
+      const lg = el('g', { class:'rl' }, g);
+      el('rect', { x:0, y:y + ch * .3, width:4, height:ch * .4, fill:t.color }, lg);
+      const tl = el('text', { x:fs * 1.1, y:y + ch / 2 + fs * .36, fill:'#F3F0E8', 'font-size':fs, 'font-weight':700 }, lg);
+      tl.textContent = t.name;
+      CHANNELS.forEach(function(c, j){
+        const v = AFFINITY[t.id][c.id], o = clamp((v - 55) / 140, .06, 1);
+        el('rect', { class:'cell', x:labelW + j * cw + 2, y:y + 2, width:cw - 4, height:ch - 4, fill:t.color,
+          style:'--o:' + o.toFixed(3) + ';--d:' + (200 + i * 70 + j * 60) + 'ms' }, g);
+        const tv = el('text', { class:'val', x:labelW + j * cw + cw / 2, y:y + ch / 2 + fs * .45, 'text-anchor':'middle',
+          fill:o > .5 ? '#090909' : '#F3F0E8', 'font-size':fs * 1.25, 'font-weight':800 }, g);
+        tv.textContent = v;
+      });
+      const on = function(){ SCENES.heatmap.focus(s, i); }, off = function(){ SCENES.heatmap.focus(s, s._step >= 1 ? 5 : -1); };
+      g.addEventListener('mouseenter', on); g.addEventListener('focus', on); g.addEventListener('mouseleave', off); g.addEventListener('blur', off);
+      return g;
+    });
+  },
+  focus:function(s, i){
+    const svg = $('.hm', s); svg.classList.toggle('has-focus', i >= 0);
+    s._rows.forEach(function(g, j){ g.classList.toggle('focus', j === i); });
+  },
+  step:function(s, k){ SCENES.heatmap.focus(s, k >= 1 ? TRIBES.length - 1 : -1); }
+};
+
+/* =========================================================
+   HÁBITAT · Tech Tinkerers, afinidad + rol del canal
+   ========================================================= */
+const HABITAT = {
+  tribe:'tech',
+  roles:{ yt:'Explicación y demostración', reddit:'Validación y conversación', search:'Intención',
+    tt:'Descubrimiento', meta:'Recuerdo y retargeting', ctv:'Cobertura de apoyo' },
+  angle:{ yt:198, reddit:338, search:118, tt:162, meta:24, ctv:66 }
+};
+SCENES.habitat = {
+  build:function(s){
+    const svg = $('.hb', s), d = prepSvg(svg), w = d.w, hh = d.h;
+    const t = T[HABITAT.tribe], cx = w * .5, cy = hh * .5, rMax = w / hh < 1.05 ? Math.min(w * .27, hh * .4) : Math.min(w * .4, hh * .44);
+    const fs = clamp(Math.min(w * .019, hh * .03), 12, 20);
+    const rr = function(v){ return rMax * clamp((215 - v) / 145, .26, 1); };
+    if(w / hh < 1.05){
+      /* móvil: el hábitat se lee como una escala vertical de afinidad */
+      const list = CHANNELS.slice().sort(function(a, b){ return AFFINITY[t.id][b.id] - AFFINITY[t.id][a.id]; });
+      const lvl = function(v){ return v >= 170 ? 'Muy alto' : v >= 140 ? 'Alto' : v >= 100 ? 'Medio' : 'Bajo'; };
+      const rowH = Math.min(hh / 6.4, 90), fz = clamp(w * .042, 13, 18);
+      s._nodes = list.map(function(c, j){
+        const v = AFFINITY[t.id][c.id], g = el('g', null, svg), nr = 5 + (v - 60) / 135 * 12, y = rowH * (j + .6);
+        el('circle', { cx:18, cy:0, r:nr, fill:t.color, 'fill-opacity':clamp((v - 55) / 140, .15, 1) }, g);
+        const a1 = el('text', { x:44, y:-fz * .2, fill:'#F3F0E8', 'font-size':fz, 'font-weight':750 }, g); a1.textContent = c.name + ' ';
+        const sp = el('tspan', { fill:'rgba(243,240,232,.55)', 'font-weight':600 }, a1); sp.textContent = v + ' · ' + lvl(v);
+        const a2 = el('text', { class:'role', x:44, y:fz * 1.05, fill:t.color, 'font-size':fz * .9, 'font-weight':600, style:'--d:' + j * 120 + 'ms' }, g);
+        a2.textContent = HABITAT.roles[c.id];
+        return { g:g, x:0, y:y, sx:0, sy:y + rowH };
+      });
+      return;
+    }
+    [170, 140, 100].forEach(function(v, i){ el('circle', { class:'ring', cx:cx, cy:cy, r:rr(v), pathLength:1, style:'--d:' + i * 180 + 'ms' }, svg); });
+    el('circle', { class:'ring', cx:cx, cy:cy, r:rMax, pathLength:1, style:'--d:540ms' }, svg);
+    const lv = [['Muy alto', (rr(215) * 0 + rr(170)) * .62], ['Alto', (rr(170) + rr(140)) / 2], ['Medio', (rr(140) + rr(100)) / 2], ['Bajo', (rr(100) + rMax) / 2]];
+    lv.forEach(function(l){ const tx = el('text', { class:'lvl', x:cx, y:cy - l[1] + fs * .3, 'text-anchor':'middle', fill:'rgba(243,240,232,.42)', 'font-size':fs * .78, 'font-weight':600 }, svg); tx.textContent = l[0]; });
+    const cg = el('g', null, svg), R = rng(4), n = 46;
+    for(let i = 0; i < n; i++){ const p = sunflower(i, n, rMax * .12); el('circle', { cx:cx + p[0], cy:cy + p[1], r:clamp(rMax * .011, 1.6, 3.2), fill:t.color, 'fill-opacity':(.45 + R() * .55).toFixed(2) }, cg); }
+    const tn = el('text', { x:cx, y:cy + rMax * .12 + fs * 1.3, 'text-anchor':'middle', fill:t.color, 'font-size':fs * .85, 'font-weight':800 }, cg);
+    tn.textContent = t.name;
+    s._nodes = CHANNELS.map(function(c, j){
+      const port = w / hh < 1.05, PA = { yt:250, reddit:110, search:200, tt:160, meta:340, ctv:20 };
+      const v = AFFINITY[t.id][c.id], a = (port ? PA[c.id] : HABITAT.angle[c.id]) * Math.PI / 180, r = rr(v);
+      const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r, right = Math.cos(a) >= 0;
+      const g = el('g', null, svg);
+      const nr = 5 + (v - 60) / 135 * rMax * .055;
+      el('circle', { r:nr, fill:t.color, 'fill-opacity':clamp((v - 55) / 140, .15, 1) }, g);
+      el('circle', { r:nr + 5, fill:'none', stroke:t.color, 'stroke-opacity':.4 }, g);
+      let ox = right ? nr + 10 : -nr - 10, anchor = right ? 'start' : 'end', oy = 0;
+      if(port){ ox = 0; anchor = 'middle'; oy = Math.sin(a) < 0 ? -(nr + fs * 2.3) : nr + fs * 1.3; }
+      const t1 = el('text', { x:ox, y:oy - fs * .15, 'text-anchor':anchor, fill:'#F3F0E8', 'font-size':fs * 1.05, 'font-weight':750 }, g);
+      t1.textContent = c.name + ' ';
+      const ts = el('tspan', { fill:'rgba(243,240,232,.55)', 'font-weight':600 }, t1); ts.textContent = v;
+      const t2 = el('text', { class:'role', x:ox, y:oy + fs * 1.05, 'text-anchor':anchor, fill:t.color, 'font-size':fs * .88, 'font-weight':600, style:'--d:' + j * 120 + 'ms' }, g);
+      t2.textContent = HABITAT.roles[c.id];
+      return { g:g, x:x, y:y, sx:cx - rMax + j * (rMax * 2 / 5), sy:cy + rMax * 1.08 };
+    });
+  },
+  enter:function(s, o){
+    s._nodes.forEach(function(n, i){
+      if(o.instant){ n.g.setAttribute('transform', 'translate(' + n.x + ' ' + n.y + ')'); n.g.setAttribute('opacity', 1); return; }
+      n.g.setAttribute('transform', 'translate(' + n.sx + ' ' + n.sy + ')'); n.g.setAttribute('opacity', 0);
+      tween(s, { dur:1300, delay:500 + i * 110, ease:E.quart, update:function(e){
+        n.g.setAttribute('transform', 'translate(' + lerp(n.sx, n.x, e) + ' ' + lerp(n.sy, n.y, e) + ')');
+        n.g.setAttribute('opacity', clamp(e * 2.5, 0, 1)); } });
+    });
+  }
+};
+
+/* =========================================================
+   TERRITORIOS CREATIVOS · tríptico publicitario
+   ========================================================= */
+const TERRITORIES = [
+  { id:'urban', claim:'Recupera 38 minutos de ciudad.', meta:[['Tono','Preciso y útil'],['Formato','Demo de trayecto real, 30"'],['Creator','Productividad y movilidad'],['Plataforma','YouTube y Search'],['Momento','Días laborables, 8:00']] },
+  { id:'perf', claim:'Convierte cada trayecto en rendimiento.', meta:[['Tono','Reto y progreso'],['Formato','Datos de ruta en vertical'],['Creator','Ciclismo y entrenamiento'],['Plataforma','Instagram y TikTok'],['Momento','Fin de semana, mañana']] },
+  { id:'design', claim:'Diseñada para moverse. Y para mirarse.', meta:[['Tono','Sobrio y aspiracional'],['Formato','Producto en detalle, loop'],['Creator','Diseño e interiorismo'],['Plataforma','Instagram y TikTok'],['Momento','Tarde y noche']] }
+];
+SCENES.creative = {
+  build:function(s){
+    const posters = $$('.poster', s); if(posters[0].childNodes.length) return;
+    TERRITORIES.forEach(function(tr, i){
+      const t = T[tr.id], p = posters[i];
+      p.style.setProperty('--d', '0ms');
+      const art = el('svg', { class:'art', viewBox:'0 0 400 800', preserveAspectRatio:'xMidYMin slice', 'aria-hidden':'true' });
+      const c = t.color;
+      if(tr.id === 'urban'){
+        const cx = 250, cy = 250, r = 170;
+        el('circle', { cx:cx, cy:cy, r:r, fill:'none', stroke:c, 'stroke-opacity':.25, 'stroke-width':1.5 }, art);
+        for(let k = 0; k < 60; k++){ const a = k / 60 * Math.PI * 2 - Math.PI / 2, l = k % 5 ? 8 : 18;
+          el('line', { x1:cx + Math.cos(a) * (r - l), y1:cy + Math.sin(a) * (r - l), x2:cx + Math.cos(a) * r, y2:cy + Math.sin(a) * r, stroke:c, 'stroke-opacity':.5 }, art); }
+        const a1 = 38 / 60 * Math.PI * 2 - Math.PI / 2, rr = r - 34;
+        el('path', { d:'M' + cx + ',' + (cy - rr) + ' A' + rr + ',' + rr + ' 0 1 1 ' + (cx + Math.cos(a1) * rr) + ',' + (cy + Math.sin(a1) * rr), fill:'none', stroke:c, 'stroke-width':14, 'stroke-linecap':'round' }, art);
+      } else if(tr.id === 'perf'){
+        const pts = [], R = rng(9); let y = 360;
+        for(let x = -10; x <= 410; x += 20){ y = clamp(y + (R() - .52) * 60, 190, 400); pts.push([x, y]); }
+        for(let g = 180; g <= 420; g += 40) el('line', { x1:0, x2:400, y1:g, y2:g, stroke:c, 'stroke-opacity':.14 }, art);
+        el('path', { d:'M' + pts.map(function(p){ return p.join(','); }).join(' L') + ' L410,440 L-10,440 Z', fill:c, 'fill-opacity':.14 }, art);
+        el('path', { d:'M' + pts.map(function(p){ return p.join(','); }).join(' L'), fill:'none', stroke:c, 'stroke-width':3, 'stroke-linejoin':'round' }, art);
+        const pk = pts.reduce(function(a, b){ return b[1] < a[1] ? b : a; });
+        el('circle', { cx:pk[0], cy:pk[1], r:9, fill:c }, art);
+      } else {
+        el('circle', { cx:112, cy:330, r:104, fill:'none', stroke:c, 'stroke-width':2 }, art);
+        el('circle', { cx:318, cy:330, r:104, fill:'none', stroke:c, 'stroke-width':2 }, art);
+        el('path', { d:'M112,330 L196,196 L290,196 L318,330 M196,196 L206,330 L112,330 M206,330 L290,196 M178,150 L196,196 M270,160 L300,160 M290,196 L278,160', fill:'none', stroke:c, 'stroke-width':2.4, 'stroke-linejoin':'round', 'stroke-linecap':'round' }, art);
+        el('circle', { cx:206, cy:330, r:12, fill:c }, art);
+      }
+      p.appendChild(art);
+      h('p', 'who', t.name, p);
+      h('p', 'claim', tr.claim, p);
+      h('dl', null, tr.meta.map(function(m){ return '<dt>' + m[0] + '</dt><dd>' + m[1] + '</dd>'; }).join(''), p);
+    });
+  }
+};
+
+/* =========================================================
+   SANKEY · tribus → canales · WOW 4
+   ========================================================= */
+SCENES.sankey = {
+  build:function(s){
+    const svg = $('.sk', s), d = prepSvg(svg), w = d.w, hh = d.h, port = w / hh < 1.05;
+    const fs = clamp(Math.min(w * .0115, hh * .03), 10.5, 19);
+    const labelW = port ? w * .3 : clamp(w * .16, 130, 280), nw = 10;
+    const railW = w > 960 && !port ? 60 : 0;
+    const x0 = labelW, x1 = w - labelW - nw - railW;
+    const gap = clamp(hh * .028, 6, 20), sc = (hh - gap * 5) / BUDGET;
+    const defs = el('defs', null, svg), gFlows = el('g', null, svg), gNodes = el('g', null, svg);
+    const yL = {}, yR = {};
+    let y = 0; TRIBES.forEach(function(t){ yL[t.id] = y; y += t.budget * sc + gap; });
+    y = 0; RANKED.forEach(function(c){ yR[c.id] = y; y += c.budget * sc + gap; });
+    const offR = Object.assign({}, yR);
+    s._clips = []; s._flows = [];
+    const tip = $('#tip');
+    TRIBES.forEach(function(t, ti){
+      const cp = el('clipPath', { id:'skc' + ti }, defs);
+      const cr = el('rect', { x:x0, y:-10, width:0, height:hh + 20 }, cp);
+      s._clips.push(cr);
+      const g = el('g', { 'clip-path':'url(#skc' + ti + ')' }, gFlows);
+      let off = yL[t.id];
+      RANKED.forEach(function(c){
+        const v = ALLOC[t.id][c.id]; if(v <= 0) return;
+        const hv = v * sc, sy0 = off, sy1 = off + hv, ty0 = offR[c.id], ty1 = offR[c.id] + hv;
+        off += hv; offR[c.id] += hv;
+        const a = x0 + nw, b = x1, m = (a + b) / 2;
+        const p = el('path', { class:'flow', d:'M' + a + ',' + sy0 + ' C' + m + ',' + sy0 + ' ' + m + ',' + ty0 + ' ' + b + ',' + ty0 +
+          ' L' + b + ',' + ty1 + ' C' + m + ',' + ty1 + ' ' + m + ',' + sy1 + ' ' + a + ',' + sy1 + ' Z', fill:t.color, 'fill-opacity':.55 }, g);
+        p.dataset.t = t.id; p.dataset.c = c.id;
+        p.addEventListener('mouseenter', function(){ SCENES.sankey.hi(s, { t:t.id, c:c.id }); });
+        p.addEventListener('mousemove', function(ev){
+          tip.innerHTML = '<b style="color:' + t.color + '">' + t.name + '</b> → <b>' + c.name + '</b><br>' + fmtEur(v) + ' · ' + pct(v / t.budget) + ' de la presión de la tribu';
+          tip.style.left = Math.min(innerWidth - 270, ev.clientX + 16) + 'px'; tip.style.top = (ev.clientY + 16) + 'px'; tip.classList.add('show'); });
+        p.addEventListener('mouseleave', function(){ tip.classList.remove('show'); SCENES.sankey.hi(s, s._focus); });
+        s._flows.push(p);
+      });
+      const nh = t.budget * sc;
+      const ng = el('g', { class:'nodeL', tabindex:0, role:'img', 'aria-label':t.name + ', ' + fmtEur(t.budget) }, gNodes);
+      el('rect', { x:x0, y:yL[t.id], width:nw, height:nh, fill:t.color }, ng);
+      const l1 = el('text', { x:x0 - 14, y:yL[t.id] + nh / 2 - fs * .15, 'text-anchor':'end', fill:'#F3F0E8', 'font-size':fs, 'font-weight':750 }, ng);
+      l1.textContent = t.name;
+      const l2 = el('text', { x:x0 - 14, y:yL[t.id] + nh / 2 + fs * 1.05, 'text-anchor':'end', fill:'rgba(243,240,232,.58)', 'font-size':fs * .86, 'font-weight':500 }, ng);
+      l2.textContent = fmtEur(t.budget);
+      const on = function(){ SCENES.sankey.hi(s, { t:t.id }); }, off2 = function(){ SCENES.sankey.hi(s, s._focus); };
+      ng.addEventListener('mouseenter', on); ng.addEventListener('focus', on); ng.addEventListener('mouseleave', off2); ng.addEventListener('blur', off2);
+    });
+    RANKED.forEach(function(c){
+      const nh = c.budget * sc;
+      const ng = el('g', { class:'nodeR', tabindex:0, role:'img', 'aria-label':c.name + ', ' + fmtEur(c.budget) }, gNodes);
+      el('rect', { x:x1, y:yR[c.id], width:nw, height:nh, fill:'#F3F0E8' }, ng);
+      const l1 = el('text', { x:x1 + nw + 14, y:yR[c.id] + nh / 2 - fs * .15, fill:'#F3F0E8', 'font-size':fs, 'font-weight':750 }, ng);
+      l1.textContent = port && c.short ? c.short : c.name;
+      const l2 = el('text', { x:x1 + nw + 14, y:yR[c.id] + nh / 2 + fs * 1.05, fill:'rgba(243,240,232,.58)', 'font-size':fs * .86, 'font-weight':500 }, ng);
+      l2.textContent = fmtEur(c.budget) + ' · ' + pct(c.share);
+      const on = function(){ SCENES.sankey.hi(s, { c:c.id }); }, off2 = function(){ SCENES.sankey.hi(s, s._focus); };
+      ng.addEventListener('mouseenter', on); ng.addEventListener('focus', on); ng.addEventListener('mouseleave', off2); ng.addEventListener('blur', off2);
+    });
+    /* leyendas de foco, calculadas desde el dataset */
+    const u = T.urban, yt = CHANNELS[0];
+    const uCh = CHANNELS.slice().sort(function(a, b){ return ALLOC.urban[b.id] - ALLOC.urban[a.id]; });
+    const uPct = largestRemainder(uCh.map(function(c){ return ALLOC.urban[c.id]; }), 100);
+    $('.c1', s).innerHTML = '<p class="body"><b style="color:' + u.color + '">' + u.name + '</b> recibe ' + fmtEur(u.budget) + ' de presión específica.</p><div class="sk-split">' +
+      uCh.map(function(c, i){ return '<span><em style="color:' + u.color + '">' + uPct[i] + '%</em>' + c.name + '</span>'; }).join('') + '</div>';
+    const yPct = largestRemainder(TRIBES.map(function(t){ return ALLOC[t.id].yt; }), 100);
+    $('.c2', s).innerHTML = '<p class="body"><b>' + yt.name + '</b> concentra ' + fmtEur(yt.budget) + ': la suma de seis necesidades distintas.</p><div class="sk-split">' +
+      TRIBES.map(function(t, i){ return '<span><em style="color:' + t.color + '">' + yPct[i] + '%</em>' + t.name + '</span>'; }).join('') + '</div>';
+    s._span = x1 + nw - x0;
+  },
+  hi:function(s, f){
+    const svg = $('.sk', s);
+    svg.classList.toggle('f-any', !!f);
+    s._flows.forEach(function(p){ p.classList.toggle('hi', !!f && (!f.t || p.dataset.t === f.t) && (!f.c || p.dataset.c === f.c)); });
+  },
+  grow:function(s, to, instant){
+    s._clips.forEach(function(cr, i){
+      const from = +cr.getAttribute('width') || 0, target = to ? s._span : 0;
+      if(instant){ cr.setAttribute('width', target); return; }
+      tween(s, { dur:to ? 1300 : 500, delay:to ? i * 150 : 0, ease:E.inOut, update:function(e){ cr.setAttribute('width', lerp(from, target, e)); } });
+    });
+  },
+  enter:function(s, o){ SCENES.sankey.grow(s, o.step >= 1, true); if(o.step < 1) s._clips.forEach(function(c){ c.setAttribute('width', 0); }); },
+  step:function(s, k, prev, instant){
+    const S = SCENES.sankey;
+    if((k >= 1) !== (prev >= 1) || instant) S.grow(s, k >= 1, instant);
+    s._focus = k === 2 ? { t:'urban' } : k === 3 ? { c:'yt' } : null;
+    S.hi(s, s._focus);
+    $('.c0', s).classList.toggle('show', k < 2);
+    $('.c1', s).classList.toggle('show', k === 2);
+    $('.c2', s).classList.toggle('show', k === 3);
+  }
+};
+/* =========================================================
+   500.000 € → RANKING DE INVERSIÓN · WOW 5
+   500 cuadros de 1.000 € viajan desde la cifra hasta el ranking.
+   ========================================================= */
+SCENES.budget = {
+  build:function(s){
+    const f = fitCanvas($('canvas', s)); s._f = f;
+    const w = f.w, hh = f.h, port = w / hh < 1.05, pad = pxVar('--pad');
+    /* unidades: cada una hereda el color de la tribu que la origina */
+    const units = [];
+    RANKED.forEach(function(c, ci){
+      const n = c.budget / 1000;
+      const cnt = largestRemainder(TRIBES.map(function(t){ return ALLOC[t.id][c.id]; }), n);
+      let k = 0;
+      TRIBES.forEach(function(t, ti){ for(let j = 0; j < cnt[ti]; j++){ units.push({ ci:ci, ti:ti, k:k++, n:n }); } });
+    });
+    /* rejilla compacta (estado 1) */
+    const cols = 25, rows = 20, cell = Math.min(w * (port ? .8 : .5) / cols, hh * .58 / rows);
+    const gx0 = (w - cols * cell) / 2, gy0 = (hh - rows * cell) / 2 + hh * .02;
+    units.forEach(function(u, i){ u.gx = gx0 + (i % cols) * cell; u.gy = gy0 + Math.floor(i / cols) * cell;
+      const dx = (i % cols) - cols / 2, dy = Math.floor(i / cols) - rows / 2; u.d1 = Math.hypot(dx, dy) / 16 * .5; });
+    /* ranking (estado 2) */
+    const head = $('.bud-head', s), sr = s.getBoundingClientRect(), hr = head.getBoundingClientRect();
+    const top = hr.bottom - sr.top + hh * .045, bottom = hh - pad * .85;
+    const railW = w > 960 ? 64 : 0;
+    const labelLW = port ? 0 : clamp(w * .19, 150, 340), rightW = port ? 0 : clamp(w * .17, 140, 300);
+    const barX0 = port ? pad : pad + labelLW + 18;
+    const barMaxW = w - barX0 - rightW - pad - railW - (port ? 0 : 18);
+    const extraRow = port ? 2.2 : 0;
+    let RB = 3, u0 = 0;
+    for(let rb = 2; rb <= 6; rb++){ const uu = Math.min(barMaxW / Math.ceil(RANKED[0].budget / 1000 / rb), (bottom - top) / (6 * (rb + extraRow) + 5 * 1.3));
+      if(uu > u0){ u0 = uu; RB = rb; } }
+    const blockH = 6 * (RB + extraRow) * u0 + 5 * 1.3 * u0, y0 = top + Math.max(0, (bottom - top - blockH) / 2);
+    s._rows = RANKED.map(function(c, ci){ return { y:y0 + ci * ((RB + extraRow) * u0 + 1.3 * u0) + extraRow * u0, cols:Math.ceil(c.budget / 1000 / RB) }; });
+    units.forEach(function(u){ const r = s._rows[u.ci]; u.bx = barX0 + Math.floor(u.k / RB) * u0; u.by = r.y + (u.k % RB) * u0;
+      u.d2 = u.ci * .035 + (u.k / u.n) * .2; });
+    s._U = units; s._cell = cell; s._u = u0; s._p1 = s._p1 || 0; s._p2 = s._p2 || 0;
+    /* etiquetas */
+    const box = $('.bud-labels', s); box.innerHTML = '';
+    const pcSize = clamp(u0 * RB * .95, 18, 96);
+    s._eu = [];
+    RANKED.forEach(function(c, ci){
+      const r = s._rows[ci], cy = r.y + u0 * RB / 2;
+      const L = h('div', 'bl bl-l' + (ci === 0 ? ' bl-top' : ''), '<span class="rk">#' + (ci + 1) + '</span><span class="nm">' + c.name + '</span>', box);
+      const R = h('div', 'bl bl-r' + (ci === 0 ? ' bl-top' : ''), '<span class="pc">' + pct(c.share) + '</span><span class="eu"></span>', box);
+      L.style.setProperty('--d', (300 + ci * 140) + 'ms'); R.style.setProperty('--d', (500 + ci * 140) + 'ms');
+      $('.pc', R).style.fontSize = pcSize + 'px';
+      if(!port){
+        L.style.left = pad + 'px'; L.style.width = labelLW + 'px'; L.style.top = cy + 'px'; L.style.translate = '0 -50%';
+        R.style.left = (barX0 + r.cols * u0 + 18) + 'px'; R.style.top = cy + 'px'; R.style.translate = '0 -50%';
+      } else {
+        L.style.left = pad + 'px'; L.style.top = (r.y - u0 * 1.1) + 'px'; L.style.translate = '0 -50%'; L.style.justifyContent = 'flex-start';
+        R.style.right = (pad + 4) + 'px'; R.style.top = (r.y - u0 * 1.1) + 'px'; R.style.translate = '0 -50%';
+        $('.pc', R).style.fontSize = clamp(u0 * 2.2, 16, 40) + 'px';
+      }
+      s._eu.push({ node:$('.eu', R), c:c });
+    });
+    s._budget = s._budget || BUDGET;
+    SCENES.budget.writeAmounts(s, false);
+    SCENES.budget.draw(s);
+    if(!s._simBound){
+      s._simBound = true;
+      $$('.sim button', s).forEach(function(b){ b.addEventListener('click', function(ev){ ev.stopPropagation();
+        s._budget = +b.dataset.b; $$('.sim button', s).forEach(function(x){ x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        SCENES.budget.writeAmounts(s, true); }); });
+    }
+  },
+  writeAmounts:function(s, animate){
+    const B = s._budget;
+    s._eu.forEach(function(e){
+      const to = e.c.share * B, from = e.last || 0; e.last = to;
+      if(animate) countTo(s, e.node, to, { from:from, dur:700, fmt:fmtEur }); else e.node.textContent = fmtEur(to);
+    });
+    $('.bud-sub', s).textContent = 'Cada cuadro, ' + fmtEur(B / 500) + '. El color indica la tribu que origina esa inversión.';
+  },
+  draw:function(s){
+    const f = s._f, ctx = f.ctx, p1 = s._p1, p2 = s._p2, cs = s._cell * .78, bs = s._u * .8;
+    ctx.clearRect(0, 0, f.w, f.h);
+    const U = s._U;
+    for(let i = 0; i < U.length; i++){
+      const u = U[i];
+      const a = E.out(clamp((p1 - u.d1) / .5, 0, 1));
+      if(a <= 0 && p2 <= 0) continue;
+      const m = E.inOut(clamp((p2 - u.d2) / .6, 0, 1));
+      const x = lerp(u.gx, u.bx, m), y = lerp(u.gy, u.by, m), sz = lerp(cs * a, bs, m);
+      const c = mixRgb(BONE, TRIBES[u.ti].rgb, m);
+      ctx.fillStyle = rgba(c, lerp(.85, 1, m));
+      const off = (lerp(cs, bs, m) - sz) / 2;
+      ctx.fillRect(x + off, y + off, sz, sz);
+    }
+  },
+  animate:function(s, key, to, dur){
+    const from = s[key];
+    if(from === to) return;
+    tween(s, { dur:dur, ease:function(t){ return t; }, update:function(e){ s[key] = lerp(from, to, e); SCENES.budget.draw(s); } });
+  },
+  enter:function(s, o){
+    s._p1 = o.step >= 1 ? 1 : 0; s._p2 = o.step >= 2 ? 1 : 0;
+    SCENES.budget.draw(s);
+    $$('.bl', s).forEach(function(b){ b.classList.toggle('show', o.step >= 2); });
+  },
+  step:function(s, k, prev, instant){
+    const B = SCENES.budget;
+    if(instant){ s._p1 = k >= 1 ? 1 : 0; s._p2 = k >= 2 ? 1 : 0; B.draw(s); $$('.bl', s).forEach(function(b){ b.classList.toggle('show', k >= 2); }); return; }
+    stopAll(s);
+    if(k === 0){ B.animate(s, '_p2', 0, 600); B.animate(s, '_p1', 0, 700); }
+    if(k === 1){ if(s._p2 > 0) B.animate(s, '_p2', 0, 1300); else B.animate(s, '_p1', 1, 1300); }
+    if(k === 2){ if(s._p1 < 1) s._p1 = 1; B.animate(s, '_p2', 1, 2300); }
+    $$('.bl', s).forEach(function(b){ b.classList.toggle('show', k >= 2); });
+    if(k === 2) later(s, 1500, function(){ s._eu.forEach(function(e, i){ countTo(s, e.node, e.c.share * s._budget, { dur:900, delay:i * 140, fmt:fmtEur }); }); });
+  }
+};
+
+/* =========================================================
+   LA ESTRATEGIA ESTÁ DEBAJO · por qué pesa cada canal
+   ========================================================= */
+SCENES.why = {
+  build:function(s){
+    const box = $('.why-rows', s); if(box.childNodes.length) return;
+    const shareOf = function(cid, ids){ return Math.round(ids.reduce(function(a, id){ return a + ALLOC[id][cid]; }, 0) / CHANNELS.find(function(c){ return c.id === cid; }).budget * 100); };
+    const nYT = TRIBES.filter(function(t){ return AFFINITY[t.id].yt > 120; }).length;
+    const txt = {
+      yt:'<b>Alcance transversal y demostración.</b> Afinidad superior a 120 en ' + nYT + ' de las 6 tribus.',
+      meta:'<b>Escala y retargeting.</b> Máxima eficiencia en Eco Pragmatists y Urban Optimizers.',
+      tt:'<b>Descubrimiento.</b> Social Explorers y Design Status Seekers suman el ' + shareOf('tt', ['social','design']) + '% de su inversión.',
+      search:'<b>Captura de demanda e intención.</b> Urban Optimizers y Eco Pragmatists aportan el ' + shareOf('search', ['urban','eco']) + '%.',
+      reddit:'<b>Consideración y validación.</b> Donde Tech Tinkerers y Urban Optimizers comparan antes de decidir (' + shareOf('reddit', ['tech','urban']) + '%).'
+    };
+    RANKED.slice(0, 5).forEach(function(c, ci){
+      const row = h('div', 'wr', null, box);
+      row.setAttribute('data-in', '1'); row.style.setProperty('--d', (ci * 160) + 'ms');
+      h('span', 'nm', c.name, row); h('span', 'pc', pct(c.share), row); h('span', 'tx', txt[c.id], row);
+      const br = h('span', 'br', null, row); br.setAttribute('aria-label', 'Tribus que alimentan ' + c.name);
+      TRIBES.forEach(function(t){ const v = ALLOC[t.id][c.id]; if(v <= 0) return;
+        const i = h('i', null, null, br); i.style.setProperty('--c', t.color); i.style.setProperty('--w', (v / c.budget * 97).toFixed(2));
+        i.style.setProperty('--d', (ci * 160 + 300) + 'ms'); i.title = t.name + ': ' + pct(v / c.budget); });
+    });
+    $('.keys', s).innerHTML = 'Qué tribus alimentan cada canal:&nbsp; ' + TRIBES.map(function(t){ return '<span><i style="--c:' + t.color + '"></i>' + t.name + '</span>'; }).join('');
+  }
+};
+
+/* =========================================================
+   GENÉRICO VS TRIBE IMPACT · simulación
+   ========================================================= */
+SCENES.results = {
+  build:function(s){
+    const field = $('.field', s); if(field.childNodes.length) return;
+    const R = rng(31), dots = [];
+    for(let i = 0; i < 100; i++) dots.push(h('i', null, null, field));
+    const idx = []; for(let i = 0; i < 100; i++) idx.push(i);
+    for(let i = 99; i > 0; i--){ const j = Math.floor(R() * (i + 1)); const t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+    s._gen = new Set(idx.slice(0, PLANS.generic.coverage));
+    const cnt = largestRemainder(TRIBES.map(function(t){ return t.share; }), PLANS.tribe.coverage);
+    s._tri = []; TRIBES.forEach(function(t, i){ for(let j = 0; j < cnt[i]; j++) s._tri.push(t.color); });
+    s._dots = dots;
+    const M = [
+      ['Cobertura cualificada', 'coverage', function(v){ return Math.round(v) + '%'; }, function(a, b){ return '+' + (b - a) + ' puntos'; }],
+      ['Índice de afinidad medio', 'affinity', function(v){ return String(Math.round(v)); }, function(a, b){ return '+' + (b - a) + ' sobre el plan genérico'; }],
+      ['Frecuencia efectiva estimada', 'freq', function(v){ return fmtDec(v, 1); }, function(a, b){ return '+' + fmtDec(b - a, 1) + ' contactos'; }],
+      ['Coste por contacto cualificado', 'cost', function(v){ return Math.round(v) === 0 ? 'Base' : '−' + Math.abs(Math.round(v)) + '%'; }, function(){ return 'Mismo presupuesto, menor coste'; }]
+    ];
+    const box = $('.metrics', s);
+    s._m = M.map(function(m){ const d = h('div', 'mt', '<p class="lb">' + m[0] + '</p><p class="vl"></p><p class="dl">' + m[3](PLANS.generic[m[1]], PLANS.tribe[m[1]]) + '</p>', box);
+      return { vl:$('.vl', d), key:m[1], fmt:m[2], cur:PLANS.generic[m[1]] }; });
+    $('.toggle .gen', s).addEventListener('click', function(ev){ ev.stopPropagation(); DECK.setStepOf(s, 0); });
+    $('.toggle .ti', s).addEventListener('click', function(ev){ ev.stopPropagation(); DECK.setStepOf(s, 1); });
+  },
+  paint:function(s, k, instant){
+    const tribe = k >= 1;
+    s._dots.forEach(function(d, i){
+      d.style.setProperty('--d', instant ? '0ms' : (i * 9) + 'ms');
+      if(tribe){ const lit = i < s._tri.length; d.classList.toggle('lit', lit); d.style.setProperty('--c', lit ? s._tri[i] : ''); }
+      else { const lit = s._gen.has(i); d.classList.toggle('lit', lit); d.style.setProperty('--c', 'var(--bone)'); }
+    });
+    const plan = tribe ? PLANS.tribe : PLANS.generic;
+    s._m.forEach(function(m){ const to = plan[m.key];
+      if(instant){ m.cur = to; m.vl.textContent = m.fmt(to); return; }
+      countTo(s, m.vl, to, { from:m.cur, dur:1200, delay:300, fmt:m.fmt }); m.cur = to; });
+    $('.toggle .gen', s).setAttribute('aria-pressed', tribe ? 'false' : 'true');
+    $('.toggle .ti', s).setAttribute('aria-pressed', tribe ? 'true' : 'false');
+  },
+  enter:function(s, o){ s._m.forEach(function(m){ m.cur = PLANS.generic[m.key]; }); SCENES.results.paint(s, o.step, true); },
+  step:function(s, k, prev, instant){ if(prev >= 0) SCENES.results.paint(s, k, instant); }
+};
+
+/* =========================================================
+   QUÉ RECIBE EL CLIENTE · línea de metro
+   ========================================================= */
+SCENES.deliver = {
+  build:function(s){
+    const m = $('#metro', s); if(m.querySelector('.stn')) return;
+    const items = [
+      ['Mapa de tribus', 'Quiénes son y cuánto pesan.'], ['Tribe profiles', 'Qué les mueve y cómo se comportan.'],
+      ['Digital habitat', 'Dónde encontrarlas y qué rol cumple cada entorno.'], ['Creative codes', 'Cómo hablarles.'],
+      ['Media mix', 'Dónde invertir y con qué peso.'], ['Activation plan', 'Cómo convertirlo en campaña.']
+    ];
+    items.forEach(function(it, i){
+      const d = h('div', 'stn ' + (i % 2 ? 'dn' : 'up'), '<span class="dot"></span><div class="tx"><p class="n">0' + (i + 1) + '</p><p class="t">' + it[0] + '</p><p class="d">' + it[1] + '</p></div>', m);
+      d.style.setProperty('--i', i);
+    });
+  }
+};
+
+/* =========================================================
+   APLICACIONES · cambia el producto, cambia el mapa
+   ========================================================= */
+const APPS = ['Una serie', 'Una película', 'Un producto', 'Una marca', 'Un videojuego', 'Una plataforma', 'Un lanzamiento'];
+SCENES.apps = {
+  build:function(s){
+    const f = fitCanvas($('.apps-map', s)); s._f = f;
+    const w = f.w, hh = f.h, N = 240, dot = clamp(Math.min(w, hh) / 160, 1.8, 3.4);
+    s._dotR = dot;
+    s._cfg = APPS.map(function(name, ai){
+      const R = rng(100 + ai * 7), k = 3 + Math.floor(R() * 5);
+      const wts = []; for(let i = 0; i < k; i++) wts.push(.35 + R());
+      const cnt = largestRemainder(wts, N);
+      const base = Math.min(w, hh) * .2;
+      const cl = cnt.map(function(c, i){ return { r:base * Math.sqrt(c / N * k) * .75, c:c, tone:.28 + (i / k) * .62 }; });
+      packCircles(cl, w / 2, hh / 2, base * .16);
+      let bx0 = Infinity, bx1 = -Infinity, by0 = Infinity, by1 = -Infinity;
+      cl.forEach(function(c){ bx0 = Math.min(bx0, c.x - c.r); bx1 = Math.max(bx1, c.x + c.r); by0 = Math.min(by0, c.y - c.r); by1 = Math.max(by1, c.y + c.r); });
+      const sc = Math.min(1.2, w * .92 / (bx1 - bx0), hh * .92 / (by1 - by0)), mx = (bx0 + bx1) / 2, my = (by0 + by1) / 2;
+      const pts = [];
+      cl.forEach(function(c){ const cx = w / 2 + (c.x - mx) * sc, cy = hh / 2 + (c.y - my) * sc;
+        for(let j = 0; j < c.c; j++){ const p = sunflower(j, c.c, c.r * sc * .95); pts.push([cx + p[0], cy + p[1], c.tone]); } });
+      return pts;
+    });
+    s._pos = s._cfg[s._ci || 0].map(function(p){ return p.slice(); });
+    SCENES.apps.draw(s);
+  },
+  draw:function(s){
+    const f = s._f, ctx = f.ctx, r = s._dotR; ctx.clearRect(0, 0, f.w, f.h);
+    s._pos.forEach(function(p){ ctx.fillStyle = 'rgba(9,9,9,' + p[2].toFixed(2) + ')'; ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, Math.PI * 2); ctx.fill(); });
+  },
+  morph:function(s, ci){
+    const from = s._pos.map(function(p){ return p.slice(); }), to = s._cfg[ci];
+    s._ci = ci;
+    tween(s, { dur:560, ease:E.inOut, update:function(e){
+      s._pos = from.map(function(p, i){ return [lerp(p[0], to[i][0], e), lerp(p[1], to[i][1], e), lerp(p[2], to[i][2], e)]; });
+      SCENES.apps.draw(s); } });
+  },
+  word:function(s, txt, instant){
+    const slot = $('.slot', s), old = $$('span', slot);
+    const n = h('span', instant ? '' : 'enter', null, slot); n.textContent = txt;
+    old.forEach(function(o){ if(instant){ o.remove(); return; } o.classList.add('leave'); setTimeout(function(){ o.remove(); }, 520); });
+    if(!instant){ void n.offsetWidth; n.classList.remove('enter'); }
+  },
+  enter:function(s, o){
+    const A = SCENES.apps;
+    if(o.instant){ A.word(s, APPS[APPS.length - 1], true); s._ci = APPS.length - 1; s._pos = s._cfg[s._ci].map(function(p){ return p.slice(); }); A.draw(s); return; }
+    A.word(s, APPS[0], true); s._ci = 0; s._pos = s._cfg[0].map(function(p){ return p.slice(); }); A.draw(s);
+    APPS.forEach(function(wd, i){ if(!i) return; later(s, 400 + i * 720, function(){ A.word(s, wd); A.morph(s, i); }); });
+  }
+};
+
+/* =========================================================
+   ANTES / AHORA
+   ========================================================= */
+SCENES.beforeafter = {
+  build:function(s){
+    const v1 = $('.ba-v1', s), v2 = $('.ba-v2', s); if(v1.childNodes.length) return;
+    const R = rng(12);
+    for(let i = 0; i < 190; i++){ const p = sunflower(i, 190, 104); el('circle', { cx:200 + p[0] + (R() - .5) * 4, cy:130 + p[1] + (R() - .5) * 4, r:2.4, fill:'rgba(243,240,232,.42)' }, v1); }
+    const cl = TRIBES.map(function(t){ return { t:t, r:128 * Math.sqrt(t.share) * .82 }; });
+    packCircles(cl, 200, 130, 12);
+    const cnt = largestRemainder(TRIBES.map(function(t){ return t.share; }), 190);
+    cl.forEach(function(c, i){ for(let j = 0; j < cnt[i]; j++){ const p = sunflower(j, cnt[i], c.r); el('circle', { cx:c.x + p[0], cy:c.y + p[1], r:2.4, fill:c.t.color }, v2); } });
+  }
+};
+SCENES.key = {};
+
+/* =========================================================
+   NAVEGACIÓN · slide state · fullscreen · redimensionado
+   ========================================================= */
+const deck = $('#deck');
+const slides = $$('.slide', deck);
+const CHAPTERS = ['Inicio', 'El mercado', 'El método', 'Caso Volt One', 'Las tribus', 'Hábitat digital', 'Activación', 'Resultado', 'Entrega'];
+const rail = $('#rail'), progress = $('#progress'), count = $('#count'), hint = $('#hint');
+let cur = -1, pending = null, touchMode = false, ready = false;
+
+CHAPTERS.forEach(function(c, i){
+  const b = h('button', null, '<span>' + c + '</span><i></i>', rail);
+  b.type = 'button'; b.setAttribute('aria-label', 'Ir a ' + c);
+  b.addEventListener('click', function(){ const idx = slides.findIndex(function(s){ return +s.dataset.chapter === i; }); if(idx > -1) goTo(idx, 0); });
+});
+const railBtns = $$('button', rail);
+
+function stepsOf(s){ return +(s.dataset.steps || 1); }
+function sceneOf(s){ return SCENES[s.dataset.scene] || {}; }
+
+function setStep(s, k, opt){
+  opt = opt || {};
+  const prev = opt.initial ? -1 : (s._step === undefined ? 0 : s._step);
+  s._step = k;
+  for(let i = 1; i <= 7; i++) s.classList.toggle('st' + i, i <= k);
+  const sc = sceneOf(s);
+  if(sc.step) sc.step(s, k, prev, !!opt.instant);
+}
+
+function ensureBuilt(s){
+  const sc = sceneOf(s);
+  if(!s._built || s._dirty){ if(sc.build) sc.build(s); s._built = true; s._dirty = false; }
+}
+
+function enterSlide(s, step){
+  const sc = sceneOf(s), instant = step > 0 || REDUCED;
+  stopAll(s);
+  s.classList.add('no-tr');
+  s.classList.remove('on');
+  for(let i = 1; i <= 7; i++) s.classList.remove('st' + i);
+  ensureBuilt(s);
+  void s.offsetWidth;
+  if(sc.enter) sc.enter(s, { step:step, instant:instant });
+  if(!instant) s.classList.remove('no-tr');
+  s.classList.add('on');
+  setStep(s, step, { instant:instant, initial:true });
+  if(instant) requestAnimationFrame(function(){ requestAnimationFrame(function(){ s.classList.remove('no-tr'); }); });
+}
+
+function activate(i, step, auto){
+  if(cur > -1 && cur !== i){ const old = slides[cur]; const sc = sceneOf(old); if(sc.leave) sc.leave(old); stopAll(old); }
+  cur = i;
+  const s = slides[i];
+  slides.forEach(function(x, j){ if(j === i) x.removeAttribute('inert'); else x.setAttribute('inert', ''); });
+  enterSlide(s, step);
+  document.body.classList.toggle('ui-dark', s.classList.contains('bone') || s.classList.contains('lime'));
+  document.body.classList.toggle('at-lime', s.classList.contains('lime'));
+  document.body.classList.toggle('is-demo', s.hasAttribute('data-demo'));
+  document.body.classList.toggle('at-cover', i === 0);
+  document.body.classList.toggle('at-close', i === slides.length - 1);
+  const ch = +s.dataset.chapter;
+  railBtns.forEach(function(b, j){ b.setAttribute('aria-current', j === ch ? 'true' : 'false'); });
+  progress.style.width = ((i + 1) / slides.length * 100) + '%';
+  count.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(slides.length).padStart(2, '0');
+  if(i > 0) hint.classList.add('gone');
+  if(auto) autoplay(s);
+}
+
+/* En móvil (scroll libre) los estados avanzan solos para que nada quede oculto */
+function autoplay(s){
+  const n = stepsOf(s);
+  for(let k = 1; k < n; k++) later(s, 1500 * k + 600, function(){ if(slides[cur] === s && s._step < k) setStep(s, k); });
+}
+
+function goTo(i, step){
+  i = clamp(i, 0, slides.length - 1);
+  if(i === cur){ setStep(slides[i], step || 0); return; }
+  pending = { i:i, step:step || 0, t:performance.now() };
+  const top = slides[i].offsetTop;
+  if(Math.abs(deck.scrollTop - top) < 2){ const p = pending; pending = null; activate(p.i, p.step, false); return; }
+  deck.scrollTo({ top:top, behavior:REDUCED ? 'auto' : 'smooth' });
+  setTimeout(function(){ if(pending && pending.i === i){ const p = pending; pending = null; deck.scrollTop = top; activate(p.i, p.step, false); } }, 1400);
+}
+function busy(){ return pending && performance.now() - pending.t < 1200; }
+function next(){
+  if(busy()) return;
+  const s = slides[cur];
+  if(s._step < stepsOf(s) - 1) setStep(s, s._step + 1);
+  else if(cur < slides.length - 1) goTo(cur + 1, 0);
+}
+function prev(){
+  if(busy()) return;
+  const s = slides[cur];
+  if(s._step > 0) setStep(s, s._step - 1);
+  else if(cur > 0){ const p = slides[cur - 1]; goTo(cur - 1, stepsOf(p) - 1); }
+}
+
+const io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(!ready || !e.isIntersecting || e.intersectionRatio < .6) return;
+    const i = slides.indexOf(e.target);
+    if(pending){ if(pending.i === i){ const p = pending; pending = null; activate(i, p.step, false); } return; }
+    if(i !== cur) activate(i, 0, true);
+  });
+}, { root:deck, threshold:[.6, .95] });
+slides.forEach(function(s){ io.observe(s); });
+
+addEventListener('keydown', function(e){
+  if(e.altKey || e.ctrlKey || e.metaKey) return;
+  const tag = (e.target.tagName || '').toLowerCase(), onBtn = tag === 'button';
+  if(['ArrowRight','ArrowDown','PageDown'].indexOf(e.key) > -1 || (e.key === ' ' && !onBtn)){ e.preventDefault(); touchMode = false; next(); }
+  else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key) > -1){ e.preventDefault(); touchMode = false; prev(); }
+  else if(e.key === 'Home'){ e.preventDefault(); goTo(0, 0); }
+  else if(e.key === 'End'){ e.preventDefault(); goTo(slides.length - 1, 0); }
+  else if(e.key === 'f' || e.key === 'F'){ e.preventDefault(); toggleFs(); }
+});
+
+/* rueda / trackpad: un gesto = un paso */
+let wheelLock = false, wheelAcc = 0, wheelTimer;
+deck.addEventListener('wheel', function(e){
+  e.preventDefault();
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(function(){ wheelLock = false; wheelAcc = 0; }, 190);
+  if(wheelLock) return;
+  wheelAcc += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if(Math.abs(wheelAcc) > 38){ wheelLock = true; wheelAcc > 0 ? next() : prev(); }
+}, { passive:false });
+
+/* táctil: el deslizamiento usa el scroll nativo; un toque avanza estados */
+deck.addEventListener('pointerup', function(e){
+  if(e.pointerType !== 'touch') return;
+  if(e.target.closest('button, a, [tabindex]')) return;
+  touchMode = true; next();
+});
+
+/* pantalla completa */
+const fsBtn = $('#fsBtn');
+function inFs(){ return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function toggleFs(){
+  const r = document.documentElement;
+  try{
+    if(!inFs()){ const p = (r.requestFullscreen || r.webkitRequestFullscreen).call(r); if(p && p.catch) p.catch(function(){}); }
+    else (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+  }catch(err){}
+}
+fsBtn.addEventListener('click', function(e){ e.stopPropagation(); toggleFs(); fsBtn.blur(); });
+['fullscreenchange','webkitfullscreenchange'].forEach(function(ev){ document.addEventListener(ev, function(){
+  fsBtn.setAttribute('aria-label', inFs() ? 'Salir de pantalla completa (tecla F)' : 'Pantalla completa (tecla F)'); }); });
+if(!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)) fsBtn.hidden = true;
+
+/* redimensionado: se recalculan las visualizaciones y se conserva el estado */
+let rsz;
+addEventListener('resize', function(){
+  clearTimeout(rsz);
+  rsz = setTimeout(function(){
+    slides.forEach(function(s){ if(s._built) s._dirty = true; });
+    if(cur < 0) return;
+    const s = slides[cur];
+    deck.scrollTop = s.offsetTop;
+    enterSlide(s, s._step || 0);
+    if(!(s._step > 0)) { /* estado 0 ya reproducido */ }
+  }, 180);
+});
+
+/* API mínima para controles internos */
+const DECK = { setStepOf:function(s, k){ if(slides[cur] === s) setStep(s, k); } };
+window.TribeImpact = { goTo:goTo, next:next, prev:prev, data:{ TRIBES:TRIBES, CHANNELS:CHANNELS, ALLOC:ALLOC, AFFINITY:AFFINITY } };
+
+/* arranque (admite #7 o #7.2 para abrir una diapositiva y estado concretos) */
+function start(){
+  const m = /^#(\d+)(?:\.(\d+))?$/.exec(location.hash);
+  const i = m ? clamp(+m[1] - 1, 0, slides.length - 1) : 0, st = m && m[2] ? +m[2] : 0;
+  deck.scrollTop = slides[i].offsetTop;
+  activate(i, Math.min(st, stepsOf(slides[i]) - 1), false);
+  ready = true;
+  setTimeout(function(){ hint.classList.add('gone'); }, 9000);
+}
+if(document.fonts && document.fonts.ready){
+  let started = false;
+  const go = function(){ if(!started){ started = true; start(); } };
+  document.fonts.ready.then(go); setTimeout(go, 1200);
+} else start();
+
+})();
+
+</script>
+</body>
+</html>
